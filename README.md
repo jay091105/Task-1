@@ -22,16 +22,16 @@ A full-stack web application that allows users to create, manage, and take quizz
 ## Frontend Preview
 
 - **Sign In Page**  
-  ![Sign In Page](./assets/SignIn.png)
+  
 
 - **Sign Up Page**  
-  ![Sign Up Page](./assets/SignUp.png)
+  
 
 - **Home Page**  
-  ![Home Page](./assets/Home.png)
+ 
 
 - **Quiz Page**  
-  ![Quiz Page](./assets/Quiz.png)
+  
 
 - **Quizzes List**  
   ![Quizzes List](./assets/Quiz_List.png)
