@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const QuizResults = () => {
   const { id } = useParams();
@@ -66,84 +67,92 @@ const QuizResults = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Quiz Results
-        </Typography>
-
-        <Box sx={{ mt: 4, mb: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            {result.quiz.title}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+      >
+        <Paper elevation={3} sx={{ p: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Quiz Results
           </Typography>
-          <Typography color="text.secondary" gutterBottom>
-            {result.quiz.description}
-          </Typography>
-        </Box>
 
-        <Box sx={{ mb: 4 }}>
+          <Box sx={{ mt: 4, mb: 4 }}>
+            <Typography variant="h5" gutterBottom>
+              {result.quiz.title}
+            </Typography>
+            <Typography color="text.secondary" gutterBottom>
+              {result.quiz.description}
+            </Typography>
+          </Box>
+
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Your Score
+            </Typography>
+            <Typography variant="h3" color="primary" gutterBottom>
+              {calculatePercentage()}%
+            </Typography>
+            <Typography variant="body1">
+              {result.score} out of {result.totalQuestions} questions correct
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Time taken: {formatTime(result.timeTaken)}
+            </Typography>
+          </Box>
+
+          <Divider sx={{ my: 4 }} />
+
           <Typography variant="h6" gutterBottom>
-            Your Score
+            Question Review
           </Typography>
-          <Typography variant="h3" color="primary" gutterBottom>
-            {calculatePercentage()}%
-          </Typography>
-          <Typography variant="body1">
-            {result.score} out of {result.totalQuestions} questions correct
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Time taken: {formatTime(result.timeTaken)}
-          </Typography>
-        </Box>
-
-        <Divider sx={{ my: 4 }} />
-
-        <Typography variant="h6" gutterBottom>
-          Question Review
-        </Typography>
-        <List>
-          {result.answers.map((answer, index) => (
-            <React.Fragment key={index}>
-              <ListItem>
-                <ListItemText
-                  primary={`Question ${index + 1}`}
-                  secondary={
-                    <>
-                      <Typography component="span" variant="body2" color="text.primary">
-                        {result.quiz.questions[index].question}
-                      </Typography>
-                      <br />
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        color={answer.isCorrect ? 'success.main' : 'error.main'}
-                      >
-                        Your answer: {result.quiz.questions[index].options[answer.selectedOption]}
+          <List>
+            {result.answers.map((answer, index) => (
+              <React.Fragment key={index}>
+                <ListItem>
+                  <ListItemText
+                    primary={`Question ${index + 1}`}
+                    secondary={
+                      <>
+                        <Typography component="span" variant="body2" color="text.primary">
+                          {result.quiz.questions[index].question}
+                        </Typography>
+                        <br />
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{ color: answer.isCorrect ? 'success.main' : 'error.main', fontWeight: 500 }}
+                        >
+                          Your answer: {result.quiz.questions[index].options[answer.selectedOption]}
+                        </Typography>
                         {!answer.isCorrect && (
                           <>
                             <br />
-                            Correct answer: {result.quiz.questions[index].options[result.quiz.questions[index].correctAnswer]}
+                            <Typography component="span" variant="body2" sx={{ color: 'success.main', fontWeight: 500 }}>
+                              Correct answer: {result.quiz.questions[index].options[result.quiz.questions[index].correctAnswer]}
+                            </Typography>
                           </>
                         )}
-                      </Typography>
-                    </>
-                  }
-                />
-              </ListItem>
-              <Divider />
-            </React.Fragment>
-          ))}
-        </List>
+                      </>
+                    }
+                  />
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            ))}
+          </List>
 
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate('/quizzes')}
-          >
-            Back to Quizzes
-          </Button>
-        </Box>
-      </Paper>
+          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate('/quizzes')}
+            >
+              Back to Quizzes
+            </Button>
+          </Box>
+        </Paper>
+      </motion.div>
     </Container>
   );
 };

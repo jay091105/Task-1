@@ -60,7 +60,19 @@ const QuizList = () => {
       <Grid container spacing={3}>
         {quizzes.map((quiz) => (
           <Grid item xs={12} sm={6} md={4} key={quiz._id}>
-            <Card>
+            <Card
+              sx={{
+                background: '#11131a',
+                boxShadow: '0 0 24px 0 #2196f355',
+                borderRadius: 4,
+                border: '2px solid #2196f3',
+                transition: 'box-shadow 0.3s, border-color 0.3s',
+                '&:hover': {
+                  boxShadow: '0 0 32px 4px #2196f3aa',
+                  borderColor: '#42a5f5',
+                },
+              }}
+            >
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
                   {quiz.title}

@@ -63,7 +63,16 @@ const Navbar = () => {
   ];
 
   const drawer = (
-    <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
+    <Box 
+      sx={{ 
+        width: 250,
+        bgcolor: 'background.paper',
+        height: '100%',
+        color: 'text.primary'
+      }} 
+      role="presentation" 
+      onClick={handleDrawerToggle}
+    >
       <List>
         {menuItems.map((item) => (
           <ListItem
@@ -73,11 +82,11 @@ const Navbar = () => {
             to={item.path}
             sx={{
               '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
               },
             }}
           >
-            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemIcon sx={{ color: 'primary.main' }}>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
@@ -87,11 +96,11 @@ const Navbar = () => {
             onClick={handleLogout}
             sx={{
               '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
               },
             }}
           >
-            <ListItemIcon><LogoutIcon /></ListItemIcon>
+            <ListItemIcon sx={{ color: 'error.main' }}><LogoutIcon /></ListItemIcon>
             <ListItemText primary="Logout" />
           </ListItem>
         )}
@@ -106,7 +115,7 @@ const Navbar = () => {
       sx={{ 
         borderBottom: '1px solid',
         borderColor: 'divider',
-        backgroundColor: 'background.paper',
+        bgcolor: 'background.paper',
         color: 'text.primary',
       }}
     >
@@ -154,6 +163,12 @@ const Navbar = () => {
                 ModalProps={{
                   keepMounted: true,
                 }}
+                PaperProps={{
+                  sx: {
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
+                  }
+                }}
               >
                 {drawer}
               </Drawer>
@@ -171,7 +186,7 @@ const Navbar = () => {
                       startIcon={item.icon}
                       sx={{
                         '&:hover': {
-                          backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                          bgcolor: 'rgba(255, 255, 255, 0.08)',
                         },
                       }}
                     >
@@ -192,10 +207,21 @@ const Navbar = () => {
                     open={Boolean(anchorEl)}
                     onClose={handleProfileMenuClose}
                     onClick={handleProfileMenuClose}
+                    PaperProps={{
+                      sx: {
+                        bgcolor: 'background.paper',
+                        color: 'text.primary',
+                        '& .MuiMenuItem-root': {
+                          '&:hover': {
+                            bgcolor: 'rgba(255, 255, 255, 0.08)',
+                          },
+                        },
+                      },
+                    }}
                   >
                     <MenuItem onClick={handleLogout}>
                       <ListItemIcon>
-                        <LogoutIcon fontSize="small" />
+                        <LogoutIcon fontSize="small" sx={{ color: 'error.main' }} />
                       </ListItemIcon>
                       Logout
                     </MenuItem>
@@ -205,16 +231,13 @@ const Navbar = () => {
                 menuItems.map((item) => (
                   <Button
                     key={item.text}
-                    color={item.text === 'Register' ? 'primary' : 'inherit'}
-                    variant={item.text === 'Register' ? 'contained' : 'text'}
+                    color="inherit"
                     component={RouterLink}
                     to={item.path}
                     startIcon={item.icon}
                     sx={{
                       '&:hover': {
-                        backgroundColor: item.text === 'Register' 
-                          ? 'primary.dark' 
-                          : 'rgba(0, 0, 0, 0.04)',
+                        bgcolor: 'rgba(255, 255, 255, 0.08)',
                       },
                     }}
                   >
