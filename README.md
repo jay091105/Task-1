@@ -22,7 +22,7 @@ A full-stack web application that allows users to create, manage, and take quizz
 ## Frontend Preview
 
 - **Sign In Page**  
-  ![Sign In Page](https://user-images.githubusercontent.com/123456789/abcde12345.png)
+  ![Sign In Page](https://user-images.githubusercontent.com/6304bfa3-84bc-448a-b51c-f5bc2e969d54)
 
 - **Sign Up Page**  
   ![Sign Up Page](https://user-images.githubusercontent.com/123456789/def456ghi78.png)
