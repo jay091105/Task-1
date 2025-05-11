@@ -31,7 +31,7 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
-          <Paper elevation={8} sx={{ borderRadius: 5, p: { xs: 3, md: 6 }, background: '#11131a', boxShadow: '0 0 32px 0 #2196f3cc' }}>
+          <Paper elevation={8} sx={{ borderRadius: 5, p: { xs: 3, md: 6 }, background: '#11131a', boxShadow: '0 0 32px 0 #2196f3cc', border: '3px solid #2196f3' }}>
             <Box sx={{ textAlign: 'center', mb: 5 }}>
               <Typography
                 variant="h2"

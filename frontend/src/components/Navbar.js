@@ -29,7 +29,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -108,13 +108,14 @@ const Navbar = () => {
     </Box>
   );
 
+  if (loading) return null;
+
   return (
     <AppBar 
       position="sticky" 
       elevation={0} 
       sx={{ 
-        borderBottom: '1px solid',
-        borderColor: 'divider',
+        borderBottom: '3px solid #2196f3',
         bgcolor: 'background.paper',
         color: 'text.primary',
       }}
@@ -198,8 +199,18 @@ const Navbar = () => {
                     size="small"
                     sx={{ ml: 2 }}
                   >
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                      {user.email[0].toUpperCase()}
+                    <Avatar 
+                      sx={{ 
+                        width: 32, 
+                        height: 32, 
+                        bgcolor: 'primary.main', 
+                        boxShadow: '0 0 12px 2px #2196f3',
+                        transition: 'transform 0.2s',
+                        '&:hover': { transform: 'scale(1.12)' },
+                        '&:active': { transform: 'scale(0.95)' },
+                      }}
+                    >
+                      {user.username ? user.username[0].toUpperCase() : user.email[0].toUpperCase()}
                     </Avatar>
                   </IconButton>
                   <Menu
@@ -219,6 +230,12 @@ const Navbar = () => {
                       },
                     }}
                   >
+                    <MenuItem component={RouterLink} to="/profile">
+                      <ListItemIcon>
+                        <PersonIcon fontSize="small" />
+                      </ListItemIcon>
+                      Profile
+                    </MenuItem>
                     <MenuItem onClick={handleLogout}>
                       <ListItemIcon>
                         <LogoutIcon fontSize="small" sx={{ color: 'error.main' }} />

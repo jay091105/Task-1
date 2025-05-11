@@ -72,7 +72,7 @@ const QuizResults = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
       >
-        <Paper elevation={3} sx={{ p: 4 }}>
+        <Paper elevation={3} sx={{ p: 4, boxShadow: '0 0 32px 0 #2196f3cc', border: '3px solid #2196f3' }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Quiz Results
           </Typography>

@@ -12,6 +12,8 @@ import QuizList from './pages/QuizList';
 import CreateQuiz from './pages/CreateQuiz';
 import TakeQuiz from './pages/TakeQuiz';
 import QuizResults from './pages/QuizResults';
+import Profile from './pages/Profile';
+import ResetPassword from './pages/ResetPassword';
 import { AuthProvider } from './contexts/AuthContext';
 import theme from './theme';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -21,9 +23,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <CssBaseline />
-        <AuthProvider>
-          <Router>
+      <CssBaseline />
+      <AuthProvider>
+        <Router>
             <Box 
               sx={{ 
                 display: 'flex', 
@@ -33,43 +35,45 @@ function App() {
                 color: 'text.primary'
               }}
             >
-              <Navbar />
-              <Container 
-                maxWidth="lg" 
-                sx={{ 
-                  flex: 1,
-                  py: 4,
-                  px: { xs: 2, sm: 3 },
-                  display: 'flex',
+            <Navbar />
+            <Container 
+              maxWidth="lg" 
+              sx={{ 
+                flex: 1,
+                py: 4,
+                px: { xs: 2, sm: 3 },
+                display: 'flex',
                   flexDirection: 'column',
                   gap: 3
-                }}
-              >
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/quizzes" element={<QuizList />} />
-                  <Route path="/create-quiz" element={<CreateQuiz />} />
-                  <Route path="/quiz/:id" element={<TakeQuiz />} />
-                  <Route path="/results/:id" element={<QuizResults />} />
-                </Routes>
-              </Container>
-            </Box>
-            <ToastContainer
-              position="top-right"
-              autoClose={3000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
+              }}
+            >
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/quizzes" element={<QuizList />} />
+                <Route path="/create-quiz" element={<CreateQuiz />} />
+                <Route path="/quiz/:id" element={<TakeQuiz />} />
+                <Route path="/results/:id" element={<QuizResults />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+              </Routes>
+            </Container>
+          </Box>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
               theme="dark"
-            />
-          </Router>
-        </AuthProvider>
+          />
+        </Router>
+      </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>
   );

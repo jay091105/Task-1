@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -72,6 +73,85 @@ router.post('/login', async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in' });
+    }
+});
+
+// Get current user
+router.get('/me', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json({
+            id: user._id,
+            username: user.username,
+            email: user.email
+        });
+    } catch (error) {
+        res.status(401).json({ message: 'Token is not valid' });
+    }
+});
+
+// Update user profile
+router.put('/me', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const updateData = {
+            username: req.body.username,
+            email: req.body.email
+        };
+
+        const user = await User.findByIdAndUpdate(
+            decoded.userId,
+            updateData,
+            { new: true }
+        ).select('-password');
+        
+        res.json({
+            id: user._id,
+            username: user.username,
+            email: user.email
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating profile' });
+    }
+});
+
+// Reset password
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { email, currentPassword, newPassword } = req.body;
+        
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify current password
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Current password is incorrect' });
+        }
+
+        // Update password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error resetting password' });
     }
 });
 
