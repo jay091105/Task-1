@@ -4,6 +4,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useAuth } from '../contexts/AuthContext';
+import { motion } from 'framer-motion';
 
 const validationSchema = yup.object({
   email: yup
@@ -39,58 +40,64 @@ const Login = () => {
   return (
     <Container maxWidth="sm">
       <Box sx={{ mt: 8 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h4" component="h1" align="center" gutterBottom>
-            Login
-          </Typography>
-          <form onSubmit={formik.handleSubmit}>
-            <TextField
-              fullWidth
-              id="email"
-              name="email"
-              label="Email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              id="password"
-              name="password"
-              label="Password"
-              type="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-              margin="normal"
-            />
-            {formik.errors.submit && (
-              <Typography color="error" align="center" sx={{ mt: 2 }}>
-                {formik.errors.submit}
-              </Typography>
-            )}
-            <Button
-              color="primary"
-              variant="contained"
-              fullWidth
-              type="submit"
-              sx={{ mt: 3 }}
-            >
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+        >
+          <Paper elevation={3} sx={{ p: 4, boxShadow: '0 0 32px 0 #2196f3cc', border: '3px solid #2196f3', borderRadius: 5, background: '#11131a' }}>
+            <Typography variant="h4" component="h1" align="center" gutterBottom>
               Login
-            </Button>
-          </form>
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <Typography variant="body2">
-              Don't have an account?{' '}
-              <Link component={RouterLink} to="/register">
-                Register here
-              </Link>
             </Typography>
-          </Box>
-        </Paper>
+            <form onSubmit={formik.handleSubmit}>
+              <TextField
+                fullWidth
+                id="email"
+                name="email"
+                label="Email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                id="password"
+                name="password"
+                label="Password"
+                type="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                error={formik.touched.password && Boolean(formik.errors.password)}
+                helperText={formik.touched.password && formik.errors.password}
+                margin="normal"
+              />
+              {formik.errors.submit && (
+                <Typography color="error" align="center" sx={{ mt: 2 }}>
+                  {formik.errors.submit}
+                </Typography>
+              )}
+              <Button
+                color="primary"
+                variant="contained"
+                fullWidth
+                type="submit"
+                sx={{ mt: 3 }}
+              >
+                Login
+              </Button>
+            </form>
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography variant="body2">
+                Don't have an account?{' '}
+                <Link component={RouterLink} to="/register">
+                  Register here
+                </Link>
+              </Typography>
+            </Box>
+          </Paper>
+        </motion.div>
       </Box>
     </Container>
   );
