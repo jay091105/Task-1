@@ -36,6 +36,9 @@ A full-stack web application that allows users to create, manage, and take quizz
 - **Quizzes List**  
   ![Quizzes List](./assets/Quiz_List.png)
 
+- **Profile Page**
+  ![Quizzes List](./assets/Profile.png)
+
 ### Backend
 - Node.js
 - Express.js
