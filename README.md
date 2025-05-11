@@ -41,3 +41,23 @@ Make sure you have the following installed:
 ```bash
 git clone https://github.com/jay091105/Quiz_maker.git
 cd Quiz_maker
+cd backend
+npm install
+
+cd ../frontend
+npm install
+
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/quizmaker
+JWT_SECRET=your_secret_key
+
+cd backend
+npm run dev
+
+cd ../frontend
+npm start
+
+
+---
+
+Would you like me to generate a downloadable `.md` file or help you commit this to your repo directly?
