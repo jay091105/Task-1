@@ -22,20 +22,19 @@ A full-stack web application that allows users to create, manage, and take quizz
 ## Frontend Preview
 
 - **Sign In Page**  
-  ![Sign In Page](https://user-images.githubusercontent.com/6304bfa3-84bc-448a-b51c-f5bc2e969d54)
+  ![Sign In Page](./assets/SignIn.png)
 
 - **Sign Up Page**  
-  ![Sign Up Page](https://user-images.githubusercontent.com/123456789/def456ghi78.png)
+  ![Sign Up Page](./assets/SignUp.png)
 
 - **Home Page**  
-  ![Home Page](https://user-images.githubusercontent.com/123456789/homepage.png)
+  ![Home Page](./assets/Home.png)
 
 - **Quiz Page**  
-  ![Quiz Page](https://user-images.githubusercontent.com/123456789/quizpage.png)
+  ![Quiz Page](./assets/Quiz.png)
 
 - **Quizzes List**  
-  ![Quizzes List](https://user-images.githubusercontent.com/123456789/quizzeslist.png)
-
+  ![Quizzes List](./assets/Quiz_List.png)
 
 ### Backend
 - Node.js
