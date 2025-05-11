@@ -19,6 +19,24 @@ A full-stack web application that allows users to create, manage, and take quizz
 - Axios (for API requests)
 - React Router DOM
 
+## Frontend Preview
+
+- **Sign In Page**  
+  ![Sign In Page](https://user-images.githubusercontent.com/123456789/abcde12345.png)
+
+- **Sign Up Page**  
+  ![Sign Up Page](https://user-images.githubusercontent.com/123456789/def456ghi78.png)
+
+- **Home Page**  
+  ![Home Page](https://user-images.githubusercontent.com/123456789/homepage.png)
+
+- **Quiz Page**  
+  ![Quiz Page](https://user-images.githubusercontent.com/123456789/quizpage.png)
+
+- **Quizzes List**  
+  ![Quizzes List](https://user-images.githubusercontent.com/123456789/quizzeslist.png)
+
+
 ### Backend
 - Node.js
 - Express.js
