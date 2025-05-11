@@ -25,16 +25,19 @@ A full-stack web application that allows users to create, manage, and take quizz
   ![Sign In Page](./assets/SignIn.png)
 
 - **Sign Up Page**  
-  ![Sign Up Page](./assets/SignUp.png)
+  ![Sign In Page](./assets/SignUp.png)
 
 - **Home Page**  
-  ![Home Page](./assets/Home.png)
+ ![Sign In Page](./assets/Home.png)
 
 - **Quiz Page**  
-  ![Quiz Page](./assets/Quiz.png)
+  ![Sign In Page](./assets/Quiz.png)
 
 - **Quizzes List**  
   ![Quizzes List](./assets/Quiz_List.png)
+
+- **Profile Page**
+  ![Quizzes List](./assets/Profile.png)
 
 ### Backend
 - Node.js
