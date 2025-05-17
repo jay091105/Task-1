@@ -111,14 +111,7 @@ const Navbar = () => {
   if (loading) return null;
 
   return (
-    <AppBar 
-      position="sticky" 
-      elevation={0} 
-      sx={{ 
-        borderBottom: '3px solid #2196f3',
-        bgcolor: 'background.paper',
-        color: 'text.primary',
-      }}
+        <AppBar       position="sticky"       elevation={0}       sx={{         borderBottom: '1px solid rgba(156, 39, 176, 0.2)',        bgcolor: 'background.paper',        color: 'text.primary',      }}
     >
       <Container maxWidth="lg">
         <Toolbar disableGutters>
@@ -199,16 +192,15 @@ const Navbar = () => {
                     size="small"
                     sx={{ ml: 2 }}
                   >
-                    <Avatar 
-                      sx={{ 
-                        width: 32, 
-                        height: 32, 
-                        bgcolor: 'primary.main', 
-                        boxShadow: '0 0 12px 2px #2196f3',
-                        transition: 'transform 0.2s',
-                        '&:hover': { transform: 'scale(1.12)' },
-                        '&:active': { transform: 'scale(0.95)' },
-                      }}
+                                        <Avatar sx={{
+                          width: 32,
+                          height: 32,
+                          bgcolor: 'primary.main',
+                          boxShadow: '0 0 12px 2px rgba(33, 150, 243, 0.3)',
+                          transition: 'transform 0.2s',
+                          '&:hover': { transform: 'scale(1.12)' },
+                          '&:active': { transform: 'scale(0.95)' },
+                        }}
                     >
                       {user.username ? user.username[0].toUpperCase() : user.email[0].toUpperCase()}
                     </Avatar>

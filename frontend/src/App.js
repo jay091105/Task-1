@@ -23,57 +23,44 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <CssBaseline />
-      <AuthProvider>
-        <Router>
+        <CssBaseline />
+        <AuthProvider>
+          <Router>
             <Box 
               sx={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
                 minHeight: '100vh',
-                bgcolor: 'background.default',
-                color: 'text.primary'
+                bgcolor: 'background.default'
               }}
             >
-            <Navbar />
-            <Container 
-              maxWidth="lg" 
-              sx={{ 
-                flex: 1,
-                py: 4,
-                px: { xs: 2, sm: 3 },
-                display: 'flex',
+              <Navbar />
+              <Container 
+                maxWidth="lg" 
+                sx={{ 
+                  flex: 1,
+                  py: 4,
+                  px: { xs: 2, sm: 3 },
+                  display: 'flex',
                   flexDirection: 'column',
                   gap: 3
-              }}
-            >
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/quizzes" element={<QuizList />} />
-                <Route path="/create-quiz" element={<CreateQuiz />} />
-                <Route path="/quiz/:id" element={<TakeQuiz />} />
-                <Route path="/results/:id" element={<QuizResults />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-              </Routes>
-            </Container>
-          </Box>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-              theme="dark"
-          />
-        </Router>
-      </AuthProvider>
+                }}
+              >
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/quizzes" element={<QuizList />} />
+                  <Route path="/create-quiz" element={<CreateQuiz />} />
+                  <Route path="/quiz/:id" element={<TakeQuiz />} />
+                  <Route path="/results/:id" element={<QuizResults />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                </Routes>
+              </Container>
+            </Box>
+          </Router>
+        </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>
   );
