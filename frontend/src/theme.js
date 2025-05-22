@@ -1,30 +1,26 @@
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 900,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-  spacing: (factor) => `${0.25 * factor}rem`,
   palette: {
-    mode: 'light',
     primary: {
-      main: '#2196f3',
-      light: '#64b5f6',
-      dark: '#1976d2',
+      main: '#1976d2',
+      light: '#42a5f5',
+      dark: '#1565c0',
+      contrastText: '#ffffff',
+    },
+    secondary: {
+      main: '#90caf9',
+      light: '#e3f2fd',
+      dark: '#42a5f5',
+      contrastText: '#000000',
     },
     background: {
-      default: 'linear-gradient(to bottom, #1976d2 0%, #2196f3 35%, #29b6f6 70%, #4fc3f7 100%)',
-      paper: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(236, 246, 255, 0.95))',
+      default: '#f8fafc',
+      paper: '#ffffff',
     },
     text: {
-      primary: '#1565c0',
-      secondary: '#2196f3',
+      primary: '#1e293b',
+      secondary: '#475569',
     },
     error: {
       main: '#EF4444',
@@ -33,40 +29,54 @@ const theme = createTheme({
       main: '#F59E0B',
     },
     info: {
-      main: '#3B82F6',
+      main: '#3b82f6',
     },
     success: {
       main: '#10B981',
     },
   },
   typography: {
-    fontFamily: '"Inter", "Segoe UI", "Helvetica Neue", -apple-system, sans-serif',
+    fontFamily: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif',
     h1: {
-      fontSize: '2.5rem',
-      fontWeight: 700,
+      fontSize: '3.5rem',
+      fontWeight: 800,
       lineHeight: 1.2,
-      '@media (min-width:600px)': {
-        fontSize: '3rem',
+      letterSpacing: '-0.02em',
+      '@media (max-width:600px)': {
+        fontSize: '2.5rem',
       },
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: 600,
+      fontSize: '2.5rem',
+      fontWeight: 700,
       lineHeight: 1.3,
+      '@media (max-width:600px)': {
+        fontSize: '2rem',
+      },
     },
     h3: {
-      fontSize: '1.5rem',
-      fontWeight: 600,
-      lineHeight: 1.4,
+      fontSize: '2rem',
+      fontWeight: 700,
+      lineHeight: 1.3,
     },
     h4: {
+      fontSize: '1.75rem',
+      fontWeight: 700,
+      lineHeight: 1.4,
+    },
+    h5: {
       fontSize: '1.25rem',
       fontWeight: 600,
-      lineHeight: 1.4,
+      lineHeight: 1.5,
+    },
+    h6: {
+      fontSize: '1.125rem',
+      fontWeight: 600,
+      lineHeight: 1.5,
     },
     body1: {
       fontSize: '1rem',
-      lineHeight: 1.5,
+      lineHeight: 1.6,
     },
     body2: {
       fontSize: '0.875rem',
@@ -74,12 +84,21 @@ const theme = createTheme({
     },
     button: {
       textTransform: 'none',
-      fontWeight: 500,
+      fontWeight: 600,
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 8,
   },
+  shadows: [
+    'none',
+    '0px 2px 4px rgba(0, 0, 0, 0.05)',
+    '0px 4px 8px rgba(0, 0, 0, 0.05)',
+    '0px 8px 16px rgba(0, 0, 0, 0.05)',
+    '0px 12px 24px rgba(0, 0, 0, 0.05)',
+    '0px 16px 32px rgba(0, 0, 0, 0.05)',
+    ...Array(19).fill('none'), // Fill remaining shadows
+  ],
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -88,39 +107,19 @@ const theme = createTheme({
           margin: 0,
           padding: 0,
           position: 'relative',
-          background: 'linear-gradient(to bottom, #0288d1 0%, #03a9f4 30%, #81d4fa 70%, #e1f5fe 100%)',
+          background: '#f8fafc',
           backgroundSize: '100% 100%',
           backgroundAttachment: 'fixed',
-          '&::before': {
-            content: '""',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.15) 0%, transparent 70%)',
-            pointerEvents: 'none',
-            zIndex: 1,
-          },
-          '&::after': {
-            content: '""',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.2) 100%)',
-            pointerEvents: 'none',
-            zIndex: 1,
-          }
         }
       },
     },
     MuiContainer: {
       styleOverrides: {
         root: {
-          position: 'relative',
-          zIndex: 2,
+          '@media (min-width:600px)': {
+            paddingLeft: '24px',
+            paddingRight: '24px',
+          },
         },
       },
     },
@@ -129,20 +128,12 @@ const theme = createTheme({
         root: {
           borderRadius: '8px',
           padding: '8px 16px',
-          fontSize: '0.875rem',
-          fontWeight: 500,
-          textTransform: 'none',
-          transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            transform: 'translateY(-1px)',
-          },
+          fontSize: '1rem',
         },
         contained: {
-          background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
-          boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.05)',
           '&:hover': {
-            background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
-            boxShadow: '0 12px 20px -4px rgba(0, 0, 0, 0.4)',
+            boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.1)',
           },
         },
         outlined: {
@@ -156,15 +147,9 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(236, 246, 255, 0.95))',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 8px 32px -4px rgba(33, 150, 243, 0.2)',
-          border: '1px solid rgba(255, 255, 255, 0.4)',
-          transition: 'all 0.2s ease-in-out',
+          border: '1px solid #e2e8f0',
           '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 12px 40px -8px rgba(33, 150, 243, 0.3)',
+            boxShadow: '0px 12px 24px rgba(0, 0, 0, 0.05)',
           },
         },
       },
@@ -174,14 +159,37 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             borderRadius: '8px',
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(236, 246, 255, 0.95))',
-            backdropFilter: 'blur(10px)',
+            background: '#ffffff',
+            color: '#1e293b',
+            '&:hover': {
+              background: '#ffffff',
+            },
+            '&.Mui-focused': {
+              background: '#ffffff',
+              color: '#1e293b',
+            },
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#2196f3',
+              borderColor: '#1976d2',
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#2196f3',
+              borderColor: '#1976d2',
               borderWidth: '2px',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: '#475569',
+            '&.Mui-focused': {
+              color: '#1976d2',
+            },
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#e2e8f0',
+          },
+          '& .MuiInputBase-input': {
+            color: '#1e293b',
+            '&::placeholder': {
+              color: '#94a3b8',
+              opacity: 1,
             },
           },
         },
@@ -190,30 +198,19 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'rgba(25, 118, 210, 0.95)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 16px -4px rgba(25, 118, 210, 0.3)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          color: '#ffffff'
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #e2e8f0',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
         },
       },
     },
     MuiPaper: {
+      defaultProps: {
+        elevation: 0,
+      },
       styleOverrides: {
         root: {
-          borderRadius: '16px',
-          background: 'rgba(255, 255, 255, 0.9)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.1)',
-          transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            background: 'rgba(255, 255, 255, 0.95)',
-            boxShadow: '0 12px 40px -8px rgba(0, 0, 0, 0.15)',
-          }
-        },
-        elevation1: {
-          boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.1)',
+          backgroundImage: 'none',
         },
       },
     },
@@ -223,9 +220,6 @@ const theme = createTheme({
           padding: '0.5rem',
           '& .MuiListItem-root': {
             borderRadius: '8px',
-            '&:hover': {
-              background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%, rgba(33, 150, 243, 0.12) 100%)',
-            },
           },
         },
       },
@@ -236,34 +230,11 @@ const theme = createTheme({
           borderRadius: '6px',
           fontWeight: 500,
           '&.MuiChip-colorPrimary': {
-            background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(25, 118, 210, 0.2) 100%)',
-            backdropFilter: 'blur(10px)',
+            background: '#e3f2fd',
             color: '#1976d2',
           },
           '&.MuiChip-colorSecondary': {
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-            color: '#1976d2',
-          },
-          '&.MuiChip-colorSuccess': {
-            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%)',
-            backdropFilter: 'blur(10px)',
-            color: '#10B981',
-          },
-          '&.MuiChip-colorError': {
-            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%)',
-            backdropFilter: 'blur(10px)',
-            color: '#EF4444',
-          },
-          '&.MuiChip-colorWarning': {
-            background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%)',
-            backdropFilter: 'blur(10px)',
-            color: '#F59E0B',
-          },
-          '&.MuiChip-colorInfo': {
-            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%)',
-            backdropFilter: 'blur(10px)',
-            color: '#3B82F6',
+            background: '#ffffff',
           },
         },
       },

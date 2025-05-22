@@ -68,7 +68,7 @@ const Navbar = () => {
         width: 250,
         bgcolor: 'background.paper',
         height: '100%',
-        color: 'text.primary'
+        color: '#1e293b'
       }} 
       role="presentation" 
       onClick={handleDrawerToggle}
@@ -81,12 +81,13 @@ const Navbar = () => {
             component={RouterLink}
             to={item.path}
             sx={{
+              color: '#1976d2',
               '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.08)',
-              },
+                backgroundColor: 'rgba(25, 118, 210, 0.04)'
+              }
             }}
           >
-            <ListItemIcon sx={{ color: 'primary.main' }}>{item.icon}</ListItemIcon>
+            <ListItemIcon sx={{ color: '#1976d2' }}>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
@@ -95,12 +96,13 @@ const Navbar = () => {
             button
             onClick={handleLogout}
             sx={{
+              color: '#dc2626',
               '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.08)',
-              },
+                backgroundColor: 'rgba(220, 38, 38, 0.04)'
+              }
             }}
           >
-            <ListItemIcon sx={{ color: 'error.main' }}><LogoutIcon /></ListItemIcon>
+            <ListItemIcon sx={{ color: '#dc2626' }}><LogoutIcon /></ListItemIcon>
             <ListItemText primary="Logout" />
           </ListItem>
         )}
@@ -111,154 +113,169 @@ const Navbar = () => {
   if (loading) return null;
 
   return (
-        <AppBar       position="sticky"       elevation={0}       sx={{         borderBottom: '1px solid rgba(156, 39, 176, 0.2)',        bgcolor: 'background.paper',        color: 'text.primary',      }}
-    >
-      <Container maxWidth="lg">
-        <Toolbar disableGutters>
-          <Box
-            component={RouterLink}
-            to="/"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              color: 'inherit',
-              flexGrow: 1,
-            }}
-          >
-            <QuizIcon sx={{ mr: 1, color: 'primary.main' }} />
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 700,
-                letterSpacing: '-0.5px',
-                color: 'primary.main',
-              }}
-            >
-              Quiz Maker
-            </Typography>
-          </Box>
+        <AppBar 
+          position="sticky" 
+          elevation={0} 
+          sx={{ 
+            borderBottom: '1px solid #e2e8f0',
+            bgcolor: '#ffffff',
+            color: '#1e293b'
+          }}
+        >
+          <Container maxWidth="lg">
+            <Toolbar disableGutters>
+              <Box
+                component={RouterLink}
+                to="/"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  textDecoration: 'none',
+                  color: '#1976d2',
+                  flexGrow: 1,
+                }}
+              >
+                <QuizIcon sx={{ mr: 1, color: '#1976d2' }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    letterSpacing: '-0.5px',
+                    color: '#1976d2',
+                  }}
+                >
+                  Quiz Maker
+                </Typography>
+              </Box>
 
-          {isMobile ? (
-            <>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="end"
-                onClick={handleDrawerToggle}
-                sx={{ ml: 2 }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Drawer
-                anchor="right"
-                open={mobileOpen}
-                onClose={handleDrawerToggle}
-                ModalProps={{
-                  keepMounted: true,
-                }}
-                PaperProps={{
-                  sx: {
-                    bgcolor: 'background.paper',
-                    color: 'text.primary',
-                  }
-                }}
-              >
-                {drawer}
-              </Drawer>
-            </>
-          ) : (
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              {user ? (
+              {isMobile ? (
                 <>
-                  {menuItems.map((item) => (
-                    <Button
-                      key={item.text}
-                      color="inherit"
-                      component={RouterLink}
-                      to={item.path}
-                      startIcon={item.icon}
-                      sx={{
-                        '&:hover': {
-                          bgcolor: 'rgba(255, 255, 255, 0.08)',
-                        },
-                      }}
-                    >
-                      {item.text}
-                    </Button>
-                  ))}
                   <IconButton
-                    onClick={handleProfileMenuOpen}
-                    size="small"
-                    sx={{ ml: 2 }}
+                    color="inherit"
+                    aria-label="open drawer"
+                    edge="end"
+                    onClick={handleDrawerToggle}
+                    sx={{ ml: 2, color: '#1976d2' }}
                   >
-                                        <Avatar sx={{
-                          width: 32,
-                          height: 32,
-                          bgcolor: 'primary.main',
-                          boxShadow: '0 0 12px 2px rgba(33, 150, 243, 0.3)',
-                          transition: 'transform 0.2s',
-                          '&:hover': { transform: 'scale(1.12)' },
-                          '&:active': { transform: 'scale(0.95)' },
-                        }}
-                    >
-                      {user.username ? user.username[0].toUpperCase() : user.email[0].toUpperCase()}
-                    </Avatar>
+                    <MenuIcon />
                   </IconButton>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleProfileMenuClose}
-                    onClick={handleProfileMenuClose}
+                  <Drawer
+                    anchor="right"
+                    open={mobileOpen}
+                    onClose={handleDrawerToggle}
+                    ModalProps={{
+                      keepMounted: true,
+                    }}
                     PaperProps={{
                       sx: {
-                        bgcolor: 'background.paper',
-                        color: 'text.primary',
-                        '& .MuiMenuItem-root': {
-                          '&:hover': {
-                            bgcolor: 'rgba(255, 255, 255, 0.08)',
-                          },
-                        },
-                      },
+                        bgcolor: '#ffffff',
+                        color: '#1e293b',
+                      }
                     }}
                   >
-                    <MenuItem component={RouterLink} to="/profile">
-                      <ListItemIcon>
-                        <PersonIcon fontSize="small" />
-                      </ListItemIcon>
-                      Profile
-                    </MenuItem>
-                    <MenuItem onClick={handleLogout}>
-                      <ListItemIcon>
-                        <LogoutIcon fontSize="small" sx={{ color: 'error.main' }} />
-                      </ListItemIcon>
-                      Logout
-                    </MenuItem>
-                  </Menu>
+                    {drawer}
+                  </Drawer>
                 </>
               ) : (
-                menuItems.map((item) => (
-                  <Button
-                    key={item.text}
-                    color="inherit"
-                    component={RouterLink}
-                    to={item.path}
-                    startIcon={item.icon}
-                    sx={{
-                      '&:hover': {
-                        bgcolor: 'rgba(255, 255, 255, 0.08)',
-                      },
-                    }}
-                  >
-                    {item.text}
-                  </Button>
-                ))
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  {user ? (
+                    <>
+                      {menuItems.map((item) => (
+                        <Button
+                          key={item.text}
+                          color="inherit"
+                          component={RouterLink}
+                          to={item.path}
+                          startIcon={item.icon}
+                          sx={{
+                            color: '#1976d2',
+                            fontWeight: 500,
+                            '&:hover': {
+                              color: '#1565c0',
+                              backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                            }
+                          }}
+                        >
+                          {item.text}
+                        </Button>
+                      ))}
+                      <IconButton
+                        onClick={handleProfileMenuOpen}
+                        size="small"
+                        sx={{ ml: 2 }}
+                      >
+                        <Avatar sx={{
+                          width: 32,
+                          height: 32,
+                          bgcolor: '#1976d2',
+                          color: '#ffffff',
+                          boxShadow: '0 2px 4px rgba(25, 118, 210, 0.2)'
+                        }}>
+                          {user.username ? user.username[0].toUpperCase() : user.email[0].toUpperCase()}
+                        </Avatar>
+                      </IconButton>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleProfileMenuClose}
+                        onClick={handleProfileMenuClose}
+                        PaperProps={{
+                          sx: {
+                            bgcolor: '#ffffff',
+                            color: '#1e293b',
+                          },
+                        }}
+                      >
+                        <MenuItem component={RouterLink} to="/profile" sx={{ 
+                          color: '#1e293b',
+                          '&:hover': {
+                            backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                          }
+                        }}>
+                          <ListItemIcon>
+                            <PersonIcon fontSize="small" sx={{ color: '#1976d2' }} />
+                          </ListItemIcon>
+                          Profile
+                        </MenuItem>
+                        <MenuItem onClick={handleLogout} sx={{ 
+                          color: '#dc2626',
+                          '&:hover': {
+                            backgroundColor: 'rgba(220, 38, 38, 0.04)'
+                          }
+                        }}>
+                          <ListItemIcon>
+                            <LogoutIcon fontSize="small" sx={{ color: '#dc2626' }} />
+                          </ListItemIcon>
+                          Logout
+                        </MenuItem>
+                      </Menu>
+                    </>
+                  ) : (
+                    menuItems.map((item) => (
+                      <Button
+                        key={item.text}
+                        color="inherit"
+                        component={RouterLink}
+                        to={item.path}
+                        startIcon={item.icon}
+                        sx={{
+                          color: '#1976d2',
+                          fontWeight: 500,
+                          '&:hover': {
+                            color: '#1565c0',
+                            backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                          }
+                        }}
+                      >
+                        {item.text}
+                      </Button>
+                    ))
+                  )}
+                </Box>
               )}
-            </Box>
-          )}
-        </Toolbar>
-      </Container>
-    </AppBar>
+            </Toolbar>
+          </Container>
+        </AppBar>
   );
 };
 

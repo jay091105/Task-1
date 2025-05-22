@@ -1,10 +1,9 @@
-import React from 'react';
-import { Container, Paper, Typography, TextField, Button, Box, Link } from '@mui/material';
+import React, { useState } from 'react';
+import { Container, Paper, Typography, TextField, Button, Box, Link, Alert } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useAuth } from '../contexts/AuthContext';
-import { motion } from 'framer-motion';
 
 const validationSchema = yup.object({
   email: yup
@@ -20,6 +19,8 @@ const validationSchema = yup.object({
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const formik = useFormik({
     initialValues: {
@@ -29,10 +30,14 @@ const Login = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        setError('');
+        setIsSubmitting(true);
         await login(values.email, values.password);
         navigate('/');
       } catch (error) {
-        formik.setErrors({ submit: error.response?.data?.message || 'An error occurred' });
+        setError(error.response?.data?.message || 'Invalid email or password');
+      } finally {
+        setIsSubmitting(false);
       }
     },
   });
@@ -40,64 +45,107 @@ const Login = () => {
   return (
     <Container maxWidth="sm">
       <Box sx={{ mt: 8 }}>
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 4, 
+            boxShadow: '0 0 32px 0 rgba(33, 150, 243, 0.2)', 
+            border: '1px solid rgba(33, 150, 243, 0.3)', 
+            borderRadius: 3, 
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(236, 246, 255, 0.95))',
+            backdropFilter: 'blur(10px)',
+          }}
         >
-          <Paper elevation={3} sx={{ p: 4, boxShadow: '0 0 32px 0 #2196f3cc', border: '3px solid #2196f3', borderRadius: 5, background: '#11131a' }}>
-            <Typography variant="h4" component="h1" align="center" gutterBottom>
-              Login
-            </Typography>
-            <form onSubmit={formik.handleSubmit}>
-              <TextField
-                fullWidth
-                id="email"
-                name="email"
-                label="Email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                id="password"
-                name="password"
-                label="Password"
-                type="password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                error={formik.touched.password && Boolean(formik.errors.password)}
-                helperText={formik.touched.password && formik.errors.password}
-                margin="normal"
-              />
-              {formik.errors.submit && (
-                <Typography color="error" align="center" sx={{ mt: 2 }}>
-                  {formik.errors.submit}
-                </Typography>
-              )}
-              <Button
-                color="primary"
-                variant="contained"
-                fullWidth
-                type="submit"
-                sx={{ mt: 3 }}
+          <Typography 
+            variant="h4" 
+            component="h1" 
+            align="center" 
+            gutterBottom 
+            sx={{ 
+              color: '#0d47a1',
+              fontWeight: 600,
+              mb: 3
+            }}
+          >
+            Login
+          </Typography>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+
+          <form onSubmit={formik.handleSubmit}>
+            <TextField
+              fullWidth
+              id="email"
+              name="email"
+              label="Email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+              margin="normal"
+              sx={{ mb: 2 }}
+              disabled={isSubmitting}
+            />
+            <TextField
+              fullWidth
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+              margin="normal"
+              sx={{ mb: 2 }}
+              disabled={isSubmitting}
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              type="submit"
+              disabled={isSubmitting}
+              disableElevation
+              sx={{ 
+                mt: 3,
+                mb: 2,
+                py: 1.5,
+                fontSize: '1rem',
+                fontWeight: 500,
+                backgroundColor: '#1976d2',
+                '&:hover': {
+                  backgroundColor: '#1976d2'
+                },
+                '&:disabled': {
+                  backgroundColor: '#90caf9'
+                }
+              }}
+            >
+              {isSubmitting ? 'Logging in...' : 'Login'}
+            </Button>
+          </form>
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Typography variant="body2" sx={{ color: '#1565c0' }}>
+              Don't have an account?{' '}
+              <Link 
+                component={RouterLink} 
+                to="/register"
+                sx={{ 
+                  color: '#2196f3',
+                  fontWeight: 500,
+                  textDecoration: 'none'
+                }}
               >
-                Login
-              </Button>
-            </form>
-            <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <Typography variant="body2">
-                Don't have an account?{' '}
-                <Link component={RouterLink} to="/register">
-                  Register here
-                </Link>
-              </Typography>
-            </Box>
-          </Paper>
-        </motion.div>
+                Register here
+              </Link>
+            </Typography>
+          </Box>
+        </Paper>
       </Box>
     </Container>
   );

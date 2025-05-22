@@ -7,13 +7,16 @@ import {
   Box,
   Radio,
   RadioGroup,
+  Checkbox,
   FormControlLabel,
   FormControl,
+  FormGroup,
   LinearProgress,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Alert
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -34,9 +37,13 @@ const TakeQuiz = () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/quizzes/${id}`);
         setQuiz(response.data);
-        setAnswers(new Array(response.data.questions.length).fill(null));
+        // Initialize answers array with null for single choice and empty array for multiple choice
+        const initialAnswers = response.data.questions.map(question => 
+          question.type === 'multiple' ? [] : null
+        );
+        setAnswers(initialAnswers);
         if (response.data.timeLimit > 0) {
-          setTimeLeft(response.data.timeLimit * 60); // Convert to seconds
+          setTimeLeft(response.data.timeLimit * 60);
         }
         setLoading(false);
       } catch (err) {
@@ -65,9 +72,24 @@ const TakeQuiz = () => {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  const handleAnswerChange = (value) => {
+  const handleSingleAnswerChange = (value) => {
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = parseInt(value);
+    setAnswers(newAnswers);
+  };
+
+  const handleMultipleAnswerChange = (optionIndex) => {
+    const newAnswers = [...answers];
+    const currentAnswers = [...newAnswers[currentQuestion]];
+    
+    const index = currentAnswers.indexOf(optionIndex);
+    if (index === -1) {
+      currentAnswers.push(optionIndex);
+    } else {
+      currentAnswers.splice(index, 1);
+    }
+    
+    newAnswers[currentQuestion] = currentAnswers;
     setAnswers(newAnswers);
   };
 
@@ -83,12 +105,21 @@ const TakeQuiz = () => {
     }
   };
 
+  const isCurrentQuestionAnswered = () => {
+    const currentAnswer = answers[currentQuestion];
+    if (quiz.questions[currentQuestion].type === 'multiple') {
+      return currentAnswer && currentAnswer.length > 0;
+    }
+    return currentAnswer !== null;
+  };
+
   const handleSubmit = async () => {
     try {
       const response = await axios.post(`http://localhost:5000/api/quizzes/${id}/submit`, {
         answers: answers.map((answer, index) => ({
           questionIndex: index,
-          selectedOption: answer
+          selectedOption: answer,
+          questionType: quiz.questions[index].type
         })),
         timeTaken: quiz.timeLimit * 60 - timeLeft
       });
@@ -122,14 +153,17 @@ const TakeQuiz = () => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const currentQuestionData = quiz.questions[currentQuestion];
+  const isMultipleChoice = currentQuestionData.type === 'multiple';
+
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 4, boxShadow: '0 0 32px 0 #2196f3cc', border: '3px solid #2196f3', borderRadius: 5, background: '#11131a', mt: 2, mb: 2 }}>
+      <Paper elevation={3} sx={{ p: 4, boxShadow: '0 0 32px 0 #2196f3cc', border: '3px solid #2196f3', borderRadius: 5, background: '#ffffff', mt: 2, mb: 2 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography variant="h4" component="h1" gutterBottom color="#0d47a1">
             {quiz.title}
           </Typography>
-          <Typography color="text.secondary" gutterBottom>
+          <Typography color="#1565c0" gutterBottom>
             {quiz.description}
           </Typography>
           {timeLeft !== null && (
@@ -150,23 +184,74 @@ const TakeQuiz = () => {
             Question {currentQuestion + 1} of {quiz.questions.length}
           </Typography>
           <Typography variant="body1" gutterBottom>
-            {quiz.questions[currentQuestion].question}
+            {currentQuestionData.question}
           </Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            {isMultipleChoice ? 'Select all that apply' : 'Select one answer'}
+          </Alert>
 
-          <FormControl component="fieldset" sx={{ mt: 2 }}>
-            <RadioGroup
-              value={answers[currentQuestion]?.toString() || ''}
-              onChange={(e) => handleAnswerChange(e.target.value)}
-            >
-              {quiz.questions[currentQuestion].options.map((option, index) => (
-                <FormControlLabel
-                  key={index}
-                  value={index.toString()}
-                  control={<Radio />}
-                  label={option}
-                />
-              ))}
-            </RadioGroup>
+          <FormControl component="fieldset" sx={{ mt: 2, width: '100%' }}>
+            {isMultipleChoice ? (
+              <FormGroup>
+                {currentQuestionData.options.map((option, index) => (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={answers[currentQuestion]?.includes(index) || false}
+                        onChange={() => handleMultipleAnswerChange(index)}
+                        sx={{
+                          color: '#1976d2',
+                          '&.Mui-checked': {
+                            color: '#1976d2',
+                          },
+                        }}
+                      />
+                    }
+                    label={option}
+                    sx={{
+                      mb: 1,
+                      p: 1,
+                      borderRadius: 1,
+                      '&:hover': {
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      },
+                    }}
+                  />
+                ))}
+              </FormGroup>
+            ) : (
+              <RadioGroup
+                value={answers[currentQuestion]?.toString() || ''}
+                onChange={(e) => handleSingleAnswerChange(e.target.value)}
+              >
+                {currentQuestionData.options.map((option, index) => (
+                  <FormControlLabel
+                    key={index}
+                    value={index.toString()}
+                    control={
+                      <Radio 
+                        sx={{
+                          color: '#1976d2',
+                          '&.Mui-checked': {
+                            color: '#1976d2',
+                          },
+                        }}
+                      />
+                    }
+                    label={option}
+                    sx={{
+                      mb: 1,
+                      p: 1,
+                      borderRadius: 1,
+                      '&:hover': {
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      },
+                    }}
+                  />
+                ))}
+              </RadioGroup>
+            )}
           </FormControl>
         </Box>
 
@@ -175,6 +260,15 @@ const TakeQuiz = () => {
             variant="outlined"
             onClick={handlePrevious}
             disabled={currentQuestion === 0}
+            sx={{
+              color: '#1976d2',
+              borderColor: '#1976d2',
+              '&:hover': {
+                color: '#1565c0',
+                borderColor: '#1565c0',
+                backgroundColor: 'rgba(25, 118, 210, 0.04)'
+              }
+            }}
           >
             Previous
           </Button>
@@ -182,6 +276,18 @@ const TakeQuiz = () => {
             <Button
               variant="contained"
               onClick={handleNext}
+              disabled={!isCurrentQuestionAnswered()}
+              sx={{
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                color: '#ffffff',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+                  color: '#ffffff',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                },
+                transition: 'all 0.3s ease-in-out'
+              }}
             >
               Next
             </Button>
@@ -190,6 +296,18 @@ const TakeQuiz = () => {
               variant="contained"
               color="primary"
               onClick={() => setConfirmSubmit(true)}
+              disabled={!isCurrentQuestionAnswered()}
+              sx={{
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                color: '#ffffff',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+                  color: '#ffffff',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                },
+                transition: 'all 0.3s ease-in-out'
+              }}
             >
               Submit Quiz
             </Button>
@@ -208,8 +326,34 @@ const TakeQuiz = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmSubmit(false)}>Cancel</Button>
-          <Button onClick={handleSubmit} color="primary" variant="contained">
+          <Button 
+            onClick={() => setConfirmSubmit(false)}
+            sx={{
+              color: '#1976d2',
+              '&:hover': {
+                backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                color: '#1565c0'
+              }
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSubmit} 
+            color="primary" 
+            variant="contained"
+            sx={{
+              background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+              color: '#ffffff',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+                color: '#ffffff',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+              },
+              transition: 'all 0.3s ease-in-out'
+            }}
+          >
             Submit
           </Button>
         </DialogActions>

@@ -1,27 +1,52 @@
 import React from 'react';
 import { Box, Container } from '@mui/material';
+import VerticalNavbar from './VerticalNavbar';
+import { useAuth } from '../contexts/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 const Layout = ({ children }) => {
-  return (
-    <Box sx={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* Decorative Shapes */}
-      <Box className="decoration-shapes">
-        <Box className="shape shape1" />
-        <Box className="shape shape2" />
-        <Box className="shape shape3" />
-        <Box className="shape shape4" />
-        <Box className="shape shape5" />
+  const { user } = useAuth();
+  const location = useLocation();
+  const isAuthPage = ['/login', '/register', '/reset-password'].includes(location.pathname);
+
+  if (isAuthPage) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Container component="main" maxWidth="lg" sx={{ flex: 1, py: 4 }}>
+          {children}
+        </Container>
       </Box>
+    );
+  }
 
-      {/* Geometric Accents */}
-      <Box className="geometric-accent accent1" />
-      <Box className="geometric-accent accent2" />
-      <Box className="geometric-accent accent3" />
-
-      {/* Main Content */}
-      <Container maxWidth="lg">
-        {children}
-      </Container>
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      {user && <VerticalNavbar />}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          marginLeft: user ? { sm: '240px' } : 0,
+          width: user ? { sm: `calc(100% - 240px)` } : '100%'
+        }}
+      >
+        <Container 
+          maxWidth="lg" 
+          sx={{ 
+            flex: 1,
+            py: 4,
+            px: { xs: 2, sm: 3 },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3
+          }}
+        >
+          {children}
+        </Container>
+      </Box>
     </Box>
   );
 };

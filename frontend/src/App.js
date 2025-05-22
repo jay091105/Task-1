@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, Container, Box } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -26,39 +26,20 @@ function App() {
         <CssBaseline />
         <AuthProvider>
           <Router>
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                minHeight: '100vh',
-                bgcolor: 'background.default'
-              }}
-            >
-              <Navbar />
-              <Container 
-                maxWidth="lg" 
-                sx={{ 
-                  flex: 1,
-                  py: 4,
-                  px: { xs: 2, sm: 3 },
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 3
-                }}
-              >
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/quizzes" element={<QuizList />} />
-                  <Route path="/create-quiz" element={<CreateQuiz />} />
-                  <Route path="/quiz/:id" element={<TakeQuiz />} />
-                  <Route path="/results/:id" element={<QuizResults />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                </Routes>
-              </Container>
-            </Box>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/quizzes" element={<QuizList />} />
+                <Route path="/create-quiz" element={<CreateQuiz />} />
+                <Route path="/quiz/:id" element={<TakeQuiz />} />
+                <Route path="/results/:id" element={<QuizResults />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+              </Routes>
+              <ToastContainer position="top-center" />
+            </Layout>
           </Router>
         </AuthProvider>
       </LocalizationProvider>
