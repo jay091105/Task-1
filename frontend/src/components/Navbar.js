@@ -121,161 +121,161 @@ const Navbar = () => {
             bgcolor: '#ffffff',
             color: '#1e293b'
           }}
-        >
-          <Container maxWidth="lg">
-            <Toolbar disableGutters>
-              <Box
-                component={RouterLink}
-                to="/"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  textDecoration: 'none',
+    >
+      <Container maxWidth="lg">
+        <Toolbar disableGutters>
+          <Box
+            component={RouterLink}
+            to="/"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
                   color: '#1976d2',
-                  flexGrow: 1,
-                }}
-              >
+              flexGrow: 1,
+            }}
+          >
                 <QuizIcon sx={{ mr: 1, color: '#1976d2' }} />
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: 700,
-                    letterSpacing: '-0.5px',
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                letterSpacing: '-0.5px',
                     color: '#1976d2',
-                  }}
-                >
-                  Quiz Maker
-                </Typography>
-              </Box>
+              }}
+            >
+              Quiz Maker
+            </Typography>
+          </Box>
 
-              {isMobile ? (
-                <>
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    edge="end"
-                    onClick={handleDrawerToggle}
+          {isMobile ? (
+            <>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="end"
+                onClick={handleDrawerToggle}
                     sx={{ ml: 2, color: '#1976d2' }}
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                  <Drawer
-                    anchor="right"
-                    open={mobileOpen}
-                    onClose={handleDrawerToggle}
-                    ModalProps={{
-                      keepMounted: true,
-                    }}
-                    PaperProps={{
-                      sx: {
+              >
+                <MenuIcon />
+              </IconButton>
+              <Drawer
+                anchor="right"
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                ModalProps={{
+                  keepMounted: true,
+                }}
+                PaperProps={{
+                  sx: {
                         bgcolor: '#ffffff',
                         color: '#1e293b',
-                      }
-                    }}
-                  >
-                    {drawer}
-                  </Drawer>
-                </>
-              ) : (
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                  {user ? (
-                    <>
-                      {menuItems.map((item) => (
-                        <Button
-                          key={item.text}
-                          color="inherit"
-                          component={RouterLink}
-                          to={item.path}
-                          startIcon={item.icon}
-                          sx={{
+                  }
+                }}
+              >
+                {drawer}
+              </Drawer>
+            </>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              {user ? (
+                <>
+                  {menuItems.map((item) => (
+                    <Button
+                      key={item.text}
+                      color="inherit"
+                      component={RouterLink}
+                      to={item.path}
+                      startIcon={item.icon}
+                      sx={{
                             color: '#1976d2',
                             fontWeight: 500,
-                            '&:hover': {
+                        '&:hover': {
                               color: '#1565c0',
                               backgroundColor: 'rgba(25, 118, 210, 0.04)'
                             }
-                          }}
-                        >
-                          {item.text}
-                        </Button>
-                      ))}
-                      <IconButton
-                        onClick={handleProfileMenuOpen}
-                        size="small"
-                        sx={{ ml: 2 }}
-                      >
-                        <Avatar sx={{
+                      }}
+                    >
+                      {item.text}
+                    </Button>
+                  ))}
+                  <IconButton
+                    onClick={handleProfileMenuOpen}
+                    size="small"
+                    sx={{ ml: 2 }}
+                  >
+                                        <Avatar sx={{
                           width: 32,
                           height: 32,
                           bgcolor: '#1976d2',
                           color: '#ffffff',
                           boxShadow: '0 2px 4px rgba(25, 118, 210, 0.2)'
                         }}>
-                          {user.username ? user.username[0].toUpperCase() : user.email[0].toUpperCase()}
-                        </Avatar>
-                      </IconButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleProfileMenuClose}
-                        onClick={handleProfileMenuClose}
-                        PaperProps={{
-                          sx: {
+                      {user.username ? user.username[0].toUpperCase() : user.email[0].toUpperCase()}
+                    </Avatar>
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleProfileMenuClose}
+                    onClick={handleProfileMenuClose}
+                    PaperProps={{
+                      sx: {
                             bgcolor: '#ffffff',
                             color: '#1e293b',
-                          },
-                        }}
-                      >
+                      },
+                    }}
+                  >
                         <MenuItem component={RouterLink} to="/profile" sx={{ 
                           color: '#1e293b',
                           '&:hover': {
                             backgroundColor: 'rgba(25, 118, 210, 0.04)'
                           }
                         }}>
-                          <ListItemIcon>
+                      <ListItemIcon>
                             <PersonIcon fontSize="small" sx={{ color: '#1976d2' }} />
-                          </ListItemIcon>
-                          Profile
-                        </MenuItem>
+                      </ListItemIcon>
+                      Profile
+                    </MenuItem>
                         <MenuItem onClick={handleLogout} sx={{ 
                           color: '#dc2626',
                           '&:hover': {
                             backgroundColor: 'rgba(220, 38, 38, 0.04)'
                           }
                         }}>
-                          <ListItemIcon>
+                      <ListItemIcon>
                             <LogoutIcon fontSize="small" sx={{ color: '#dc2626' }} />
-                          </ListItemIcon>
-                          Logout
-                        </MenuItem>
-                      </Menu>
-                    </>
-                  ) : (
-                    menuItems.map((item) => (
-                      <Button
-                        key={item.text}
-                        color="inherit"
-                        component={RouterLink}
-                        to={item.path}
-                        startIcon={item.icon}
-                        sx={{
+                      </ListItemIcon>
+                      Logout
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                menuItems.map((item) => (
+                  <Button
+                    key={item.text}
+                    color="inherit"
+                    component={RouterLink}
+                    to={item.path}
+                    startIcon={item.icon}
+                    sx={{
                           color: '#1976d2',
                           fontWeight: 500,
-                          '&:hover': {
+                      '&:hover': {
                             color: '#1565c0',
                             backgroundColor: 'rgba(25, 118, 210, 0.04)'
                           }
-                        }}
-                      >
-                        {item.text}
-                      </Button>
-                    ))
-                  )}
-                </Box>
+                    }}
+                  >
+                    {item.text}
+                  </Button>
+                ))
               )}
-            </Toolbar>
-          </Container>
-        </AppBar>
+            </Box>
+          )}
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 };
 

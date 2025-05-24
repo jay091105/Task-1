@@ -18,10 +18,6 @@ const validationSchema = yup.object({
   password: yup
     .string()
     .min(6, 'Password should be of minimum 6 characters length')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    )
     .required('Password is required'),
   confirmPassword: yup
     .string()
@@ -50,8 +46,7 @@ const Register = () => {
         await register(values.username, values.email, values.password);
         navigate('/');
       } catch (error) {
-        const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
-        setError(errorMessage);
+        setError(error.message || 'Registration failed. Please try again.');
       } finally {
         setIsSubmitting(false);
       }

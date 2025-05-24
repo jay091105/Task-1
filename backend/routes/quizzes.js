@@ -14,7 +14,14 @@ router.post('/', auth, async (req, res) => {
         await quiz.save();
         res.status(201).json(quiz);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating quiz' });
+        console.error('Quiz creation error:', error.stack || error);
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ 
+                message: 'Validation error', 
+                details: Object.values(error.errors).map(err => err.message)
+            });
+        }
+        res.status(500).json({ message: 'Error creating quiz', error: error.message });
     }
 });
 
@@ -77,8 +84,22 @@ router.post('/:id/submit', auth, async (req, res) => {
 
         // Calculate score
         answers.forEach((answer, index) => {
-            if (quiz.questions[index].correctAnswer === answer.selectedOption) {
-                score++;
+            const question = quiz.questions[index];
+            if (!question) return;
+            if (question.type === 'single') {
+                if (question.correctAnswer === answer.selectedOption) {
+                    score++;
+                }
+            } else if (question.type === 'multiple') {
+                // Both should be arrays, compare as sets (order-insensitive)
+                const correct = Array.isArray(question.correctAnswers) ? question.correctAnswers.slice().sort() : [];
+                const submitted = Array.isArray(answer.selectedOption) ? answer.selectedOption.slice().sort() : [];
+                if (
+                    correct.length === submitted.length &&
+                    correct.every((val, idx) => val === submitted[idx])
+                ) {
+                    score++;
+                }
             }
         });
 

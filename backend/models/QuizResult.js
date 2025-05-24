@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
 
 const quizResultSchema = new mongoose.Schema({
-    quiz: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Quiz',
-        required: true
-    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
+    quiz: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quiz',
+        required: true
+    },
     answers: [{
         questionIndex: Number,
-        selectedOption: Number,
+        selectedOption: mongoose.Schema.Types.Mixed,  // Can be number or array of numbers
         isCorrect: Boolean
     }],
     score: {
@@ -25,13 +25,30 @@ const quizResultSchema = new mongoose.Schema({
         required: true
     },
     timeTaken: {
-        type: Number, // in seconds
+        type: Number,  // in seconds
         required: true
     },
-    completedAt: {
-        type: Date,
-        default: Date.now
-    }
+    achievementsEarned: [{
+        type: String,
+        enum: ['quiz_master', 'perfect_score', 'speed_demon', 'streak_master']
+    }]
+}, {
+    timestamps: true
+});
+
+// Calculate percentage score
+quizResultSchema.virtual('percentage').get(function() {
+    return (this.score / this.totalQuestions) * 100;
+});
+
+// Check if it's a perfect score
+quizResultSchema.virtual('isPerfect').get(function() {
+    return this.score === this.totalQuestions;
+});
+
+// Check if it's a passing score (>= 80%)
+quizResultSchema.virtual('isPassing').get(function() {
+    return this.percentage >= 80;
 });
 
 module.exports = mongoose.model('QuizResult', quizResultSchema); 

@@ -22,7 +22,8 @@ import {
   Divider,
   Alert,
   FormControl,
-  Checkbox
+  Checkbox,
+  Chip
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -38,6 +39,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 
 const CreateQuiz = () => {
   const navigate = useNavigate();
@@ -46,9 +48,6 @@ const CreateQuiz = () => {
     title: '',
     description: '',
     timeLimit: 0,
-    isPublic: true,
-    password: '',
-    requireEnrollment: false,
     questions: [
       {
         question: '',
@@ -59,6 +58,7 @@ const CreateQuiz = () => {
       }
     ]
   });
+  const [errors, setErrors] = useState({ title: '' });
 
   const handleQuizChange = (e) => {
     const { name, value, checked } = e.target;
@@ -112,7 +112,19 @@ const CreateQuiz = () => {
     }));
   };
 
+  const validateStep = () => {
+    let valid = true;
+    let newErrors = { title: '' };
+    if (!quiz.title.trim()) {
+      newErrors.title = 'Quiz title is required';
+      valid = false;
+    }
+    setErrors(newErrors);
+    return valid;
+  };
+
   const handleNext = () => {
+    if (activeStep === 0 && !validateStep()) return;
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -125,7 +137,7 @@ const CreateQuiz = () => {
     try {
       // Validate quiz data
       if (!quiz.title.trim()) {
-        alert('Please enter a quiz title');
+        toast.error('Please enter a quiz title');
         return;
       }
 
@@ -133,19 +145,23 @@ const CreateQuiz = () => {
       for (let i = 0; i < quiz.questions.length; i++) {
         const question = quiz.questions[i];
         if (!question.question.trim()) {
-          alert(`Please enter question ${i + 1}`);
+          toast.error(`Please enter question ${i + 1}`);
           return;
         }
 
         // Validate options
         if (question.options.some(opt => !opt.trim())) {
-          alert(`Please fill all options for question ${i + 1}`);
+          toast.error(`Please fill all options for question ${i + 1}`);
           return;
         }
 
         // Validate correct answers
+        if (question.type === 'single' && question.correctAnswer === undefined) {
+          toast.error(`Please select a correct answer for question ${i + 1}`);
+          return;
+        }
         if (question.type === 'multiple' && (!question.correctAnswers || question.correctAnswers.length === 0)) {
-          alert(`Please select at least one correct answer for question ${i + 1}`);
+          toast.error(`Please select at least one correct answer for question ${i + 1}`);
           return;
         }
       }
@@ -155,22 +171,30 @@ const CreateQuiz = () => {
         title: quiz.title.trim(),
         description: quiz.description.trim(),
         timeLimit: parseInt(quiz.timeLimit) || 0,
-        isPublic: quiz.isPublic,
-        password: quiz.password.trim(),
-        requireEnrollment: quiz.requireEnrollment,
-        questions: quiz.questions.map(q => ({
-          question: q.question.trim(),
-          options: q.options.map(opt => opt.trim()),
-          type: q.type,
-          correctAnswer: q.type === 'single' ? q.correctAnswer : undefined,
-          correctAnswers: q.type === 'multiple' ? q.correctAnswers : undefined
-        }))
+        isPublic: true,
+        questions: quiz.questions.map(q => {
+          const base = {
+            question: q.question.trim(),
+            options: q.options.map(opt => opt.trim()).filter(opt => opt !== ''),
+            type: q.type
+          };
+          if (q.type === 'single') {
+            base.correctAnswer = q.correctAnswer;
+            base.correctAnswers = undefined;
+          } else {
+            base.correctAnswer = undefined;
+            base.correctAnswers = q.correctAnswers;
+          }
+          return base;
+        })
       };
+
+      console.log('Quiz data being sent:', quizData);
 
       // Get the auth token from localStorage
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Please login to create a quiz');
+        toast.error('Please login to create a quiz');
         navigate('/login');
         return;
       }
@@ -184,31 +208,16 @@ const CreateQuiz = () => {
       });
 
       if (response.data) {
-        // Navigate to quiz list with success state
+        toast.success('Quiz created successfully!');
         navigate('/quizzes', { 
           state: { quizCreated: true }
         });
       }
     } catch (error) {
-      console.error('Error creating quiz:', error);
-      alert(error.response?.data?.message || 'Failed to create quiz. Please try again.');
+      console.error('Quiz creation error:', error);
+      const errorMessage = error.response?.data?.details?.[0] || error.response?.data?.message || 'Failed to create quiz. Please try again.';
+      toast.error(errorMessage);
     }
-  };
-
-  // Add validation for the quiz title field
-  const validateTitle = (value) => {
-    if (!value.trim()) {
-      return 'Quiz title is required';
-    }
-    return '';
-  };
-
-  // Add validation for the quiz description field
-  const validateDescription = (value) => {
-    if (!value.trim()) {
-      return 'Quiz description is required';
-    }
-    return '';
   };
 
   const steps = [
@@ -217,36 +226,41 @@ const CreateQuiz = () => {
       content: (
         <Box sx={{ mt: 2 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
-                label="Quiz Title"
+                label="Quiz Title *"
                 name="title"
                 value={quiz.title}
                 onChange={handleQuizChange}
                 required
+                error={!!errors.title}
+                helperText={errors.title}
                 variant="outlined"
                 sx={{
+                  minWidth: 250,
+                  minHeight: 80,
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'rgba(255, 255, 255, 0.98)',
                     borderRadius: 2,
+                    minHeight: 80,
                   },
                   '& .MuiInputLabel-root': {
                     color: '#1976d2'
                   },
                   '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'rgba(25, 118, 210, 0.3)'
+                    borderColor: errors.title ? '#ef4444' : 'rgba(25, 118, 210, 0.3)'
                   },
                   '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'rgba(25, 118, 210, 0.5)'
+                    borderColor: errors.title ? '#ef4444' : 'rgba(25, 118, 210, 0.5)'
                   },
                   '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#1976d2'
+                    borderColor: errors.title ? '#ef4444' : '#1976d2'
                   }
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="Description"
@@ -257,9 +271,12 @@ const CreateQuiz = () => {
                 rows={3}
                 variant="outlined"
                 sx={{
+                  minWidth: 250,
+                  minHeight: 80,
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'rgba(255, 255, 255, 0.98)',
                     borderRadius: 2,
+                    minHeight: 80,
                   },
                   '& .MuiInputLabel-root': {
                     color: '#1976d2'
@@ -276,9 +293,8 @@ const CreateQuiz = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <TimerIcon color="primary" />
                 <TextField
                   fullWidth
                   label="Time Limit (minutes)"
@@ -289,9 +305,12 @@ const CreateQuiz = () => {
                   inputProps={{ min: 0 }}
                   variant="outlined"
                   sx={{
+                    minWidth: 250,
+                    minHeight: 80,
                     '& .MuiOutlinedInput-root': {
                       backgroundColor: 'rgba(255, 255, 255, 0.98)',
                       borderRadius: 2,
+                      minHeight: 80,
                     },
                     '& .MuiInputLabel-root': {
                       color: '#1976d2'
@@ -309,60 +328,6 @@ const CreateQuiz = () => {
                 />
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <PublicIcon color="primary" />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={quiz.isPublic}
-                      onChange={handleQuizChange}
-                      name="isPublic"
-                      color="primary"
-                    />
-                  }
-                  label="Public Quiz"
-                />
-              </Box>
-            </Grid>
-            {!quiz.isPublic && (
-              <>
-                <Grid item xs={12} sm={6}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <TextField
-                      fullWidth
-                      label="Quiz Password (Optional)"
-                      name="password"
-                      type="password"
-                      value={quiz.password}
-                      onChange={handleQuizChange}
-                      variant="outlined"
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                          borderRadius: 2,
-                        }
-                      }}
-                    />
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={quiz.requireEnrollment}
-                          onChange={handleQuizChange}
-                          name="requireEnrollment"
-                          color="primary"
-                        />
-                      }
-                      label="Require Enrollment Approval"
-                    />
-                  </Box>
-                </Grid>
-              </>
-            )}
           </Grid>
         </Box>
       )
@@ -542,12 +507,6 @@ const CreateQuiz = () => {
             <Typography variant="subtitle1" gutterBottom sx={{ color: '#2196f3' }}>
               <strong>Time Limit:</strong> {quiz.timeLimit} minutes
             </Typography>
-            <Typography variant="subtitle1" gutterBottom sx={{ color: '#2196f3' }}>
-              <strong>Visibility:</strong> {quiz.isPublic ? 'Public' : 'Private'}
-            </Typography>
-            <Typography variant="subtitle1" gutterBottom sx={{ color: '#2196f3' }}>
-              <strong>Number of Questions:</strong> {quiz.questions.length}
-            </Typography>
           </Box>
 
           <Divider sx={{ my: 3 }} />
@@ -556,28 +515,67 @@ const CreateQuiz = () => {
             Questions Summary
           </Typography>
 
-          {quiz.questions.map((question, index) => (
-            <Box key={index} sx={{ mb: 3 }}>
-              <Typography variant="subtitle1" gutterBottom>
-                <strong>Question {index + 1}:</strong> {question.question}
-              </Typography>
-              <Box sx={{ pl: 3 }}>
-                {question.options.map((option, optIndex) => (
-                  <Typography
-                    key={optIndex}
-                    variant="body2"
-                    sx={{
-                      color: optIndex === question.correctAnswer ? 'success.main' : 'text.primary',
-                      fontWeight: optIndex === question.correctAnswer ? 600 : 400
-                    }}
-                  >
-                    {optIndex === question.correctAnswer && <CheckIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />}
-                    Option {optIndex + 1}: {option}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {quiz.questions.map((question, index) => (
+              <Paper
+                key={index}
+                elevation={3}
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: '0 4px 16px rgba(25, 118, 210, 0.10)',
+                  p: 3,
+                  background: '#f8fafc',
+                  border: '1.5px solid #e3e8f0',
+                }}
+              >
+                <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1976d2', mr: 1 }}>
+                    Question {index + 1}:
                   </Typography>
-                ))}
-              </Box>
-            </Box>
-          ))}
+                  <Typography variant="body1" sx={{ fontWeight: 500, color: '#1e293b' }}>{question.question}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {question.options.map((option, optIndex) => {
+                    const isCorrect = question.type === 'single'
+                      ? question.correctAnswer === optIndex
+                      : question.correctAnswers && question.correctAnswers.includes(optIndex);
+                    return (
+                      <Box
+                        key={optIndex}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          pl: 2,
+                          py: 0.5,
+                          borderRadius: 2,
+                          background: isCorrect ? 'rgba(16, 185, 129, 0.08)' : 'transparent',
+                        }}
+                      >
+                        {isCorrect && (
+                          <Chip
+                            label="Correct"
+                            color="success"
+                            size="small"
+                            sx={{ fontWeight: 600, mr: 1 }}
+                          />
+                        )}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: isCorrect ? 'success.main' : 'text.primary',
+                            fontWeight: isCorrect ? 600 : 400,
+                          }}
+                        >
+                          Option {optIndex + 1}: {option}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              </Paper>
+            ))}
+          </Box>
         </Box>
       )
     }
@@ -596,9 +594,9 @@ const CreateQuiz = () => {
             p: 4,
             borderRadius: 4,
             background: 'rgba(255, 255, 255, 0.98)',
+            border: '2.5px solid #1976d2',
+            boxShadow: '0 8px 32px 0 #1976d2, 0 1.5px 8px 0 #90caf9',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(25, 118, 210, 0.2)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
             mt: 4,
             mb: 4,
           }}

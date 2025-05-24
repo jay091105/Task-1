@@ -27,17 +27,17 @@ function App() {
         <AuthProvider>
           <Router>
             <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/quizzes" element={<QuizList />} />
-                <Route path="/create-quiz" element={<CreateQuiz />} />
-                <Route path="/quiz/:id" element={<TakeQuiz />} />
-                <Route path="/results/:id" element={<QuizResults />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-              </Routes>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/quizzes" element={<QuizList />} />
+                  <Route path="/create-quiz" element={<CreateQuiz />} />
+                  <Route path="/quiz/:id" element={<TakeQuiz />} />
+                  <Route path="/results/:id" element={<QuizResults />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                </Routes>
               <ToastContainer position="top-center" />
             </Layout>
           </Router>

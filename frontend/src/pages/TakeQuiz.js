@@ -221,14 +221,14 @@ const TakeQuiz = () => {
                 ))}
               </FormGroup>
             ) : (
-              <RadioGroup
-                value={answers[currentQuestion]?.toString() || ''}
+            <RadioGroup
+              value={answers[currentQuestion]?.toString() || ''}
                 onChange={(e) => handleSingleAnswerChange(e.target.value)}
-              >
+            >
                 {currentQuestionData.options.map((option, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={index.toString()}
+                <FormControlLabel
+                  key={index}
+                  value={index.toString()}
                     control={
                       <Radio 
                         sx={{
@@ -239,7 +239,7 @@ const TakeQuiz = () => {
                         }}
                       />
                     }
-                    label={option}
+                  label={option}
                     sx={{
                       mb: 1,
                       p: 1,
@@ -248,9 +248,9 @@ const TakeQuiz = () => {
                         backgroundColor: 'rgba(25, 118, 210, 0.04)',
                       },
                     }}
-                  />
-                ))}
-              </RadioGroup>
+                />
+              ))}
+            </RadioGroup>
             )}
           </FormControl>
         </Box>

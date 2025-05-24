@@ -10,8 +10,15 @@ const questionSchema = new mongoose.Schema({
         required: true
     }],
     correctAnswer: {
-        type: Number,
-        required: true
+        type: Number
+    },
+    correctAnswers: [{
+        type: Number
+    }],
+    type: {
+        type: String,
+        enum: ['single', 'multiple'],
+        default: 'single'
     }
 });
 

@@ -19,7 +19,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  IconButton
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -29,17 +30,17 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import TimerIcon from '@mui/icons-material/Timer';
 import PublicIcon from '@mui/icons-material/Public';
 import LockIcon from '@mui/icons-material/Lock';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from '../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 const QuizList = () => {
   const [publicQuizzes, setPublicQuizzes] = useState([]);
-  const [privateQuizzes, setPrivateQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ open: false, message: '', type: 'success' });
-  const [activeTab, setActiveTab] = useState(0);
-  const [passwordDialog, setPasswordDialog] = useState({ open: false, quizId: null, password: '' });
-  const [enrollDialog, setEnrollDialog] = useState({ open: false, quizId: null, message: '' });
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [quizToDelete, setQuizToDelete] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -56,13 +57,6 @@ const QuizList = () => {
           }
         });
         
-        // Fetch private quizzes (only user's private quizzes)
-        const privateResponse = await axios.get('http://localhost:5000/api/quizzes/my-quizzes', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
         const processQuizzes = (quizzes) => quizzes.map(quiz => ({
           ...quiz,
           creator: quiz.creator || { username: 'Anonymous' },
@@ -72,7 +66,6 @@ const QuizList = () => {
         }));
 
         setPublicQuizzes(processQuizzes(publicResponse.data.filter(quiz => quiz.isPublic)));
-        setPrivateQuizzes(processQuizzes(privateResponse.data.filter(quiz => !quiz.isPublic)));
         
         // Show success notification if quiz was just created
         if (location.state?.quizCreated) {
@@ -83,10 +76,6 @@ const QuizList = () => {
           });
           // Clear the state
           window.history.replaceState({}, document.title);
-          // Set active tab to private if a private quiz was created
-          if (location.state?.isPrivate) {
-            setActiveTab(1);
-          }
         }
       } catch (err) {
         setError('Failed to fetch quizzes. Please try again later.');
@@ -107,70 +96,33 @@ const QuizList = () => {
     setNotification({ ...notification, open: false });
   };
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  const handleOpenDeleteDialog = (quizId) => {
+    setQuizToDelete(quizId);
+    setDeleteDialogOpen(true);
   };
 
-  const handleTakeQuiz = (quiz) => {
-    if (!quiz.isPublic && quiz.password) {
-      setPasswordDialog({ open: true, quizId: quiz._id, password: '' });
-    } else {
-      navigate(`/quiz/${quiz._id}`);
-    }
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setQuizToDelete(null);
   };
 
-  const handlePasswordSubmit = async () => {
+  const handleConfirmDelete = async () => {
+    if (!quizToDelete) return;
     try {
-      const response = await axios.post(`http://localhost:5000/api/quizzes/${passwordDialog.quizId}/verify-password`, 
-        { password: passwordDialog.password },
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-
-      if (response.data.success) {
-        setPasswordDialog({ open: false, quizId: null, password: '' });
-        navigate(`/quiz/${passwordDialog.quizId}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/api/quizzes/${quizToDelete}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setPublicQuizzes((prev) => prev.filter((q) => q._id !== quizToDelete));
+      toast.success('Quiz deleted successfully!');
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        toast.error('Quiz not found or already deleted.');
       } else {
-        setNotification({
-          open: true,
-          message: 'Incorrect password',
-          type: 'error'
-        });
+        toast.error('Failed to delete quiz');
       }
-    } catch (err) {
-      setNotification({
-        open: true,
-        message: 'Failed to verify password',
-        type: 'error'
-      });
-    }
-  };
-
-  const handleEnrollmentRequest = async () => {
-    try {
-      const response = await axios.post(`http://localhost:5000/api/quizzes/${enrollDialog.quizId}/enroll`, {
-        message: enrollDialog.message
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      setEnrollDialog({ open: false, quizId: null, message: '' });
-      setNotification({
-        open: true,
-        message: 'Enrollment request sent successfully',
-        type: 'success'
-      });
-    } catch (err) {
-      setNotification({
-        open: true,
-        message: 'Failed to send enrollment request',
-        type: 'error'
-      });
+    } finally {
+      handleCloseDeleteDialog();
     }
   };
 
@@ -193,8 +145,6 @@ const QuizList = () => {
       </Box>
     );
   }
-
-  const currentQuizzes = activeTab === 0 ? publicQuizzes : privateQuizzes;
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
@@ -227,32 +177,7 @@ const QuizList = () => {
         </Button>
       </Box>
 
-      <Paper sx={{ mb: 3 }}>
-        <Tabs 
-          value={activeTab} 
-          onChange={handleTabChange}
-          variant="fullWidth"
-          sx={{
-            '& .MuiTab-root': {
-              minHeight: '64px',
-              fontSize: '1rem'
-            }
-          }}
-        >
-          <Tab 
-            icon={<PublicIcon />} 
-            label="Public Quizzes" 
-            iconPosition="start"
-          />
-          <Tab 
-            icon={<LockIcon />} 
-            label="My Private Quizzes" 
-            iconPosition="start"
-          />
-        </Tabs>
-      </Paper>
-
-      {currentQuizzes.length === 0 ? (
+      {publicQuizzes.length === 0 ? (
         <Box 
           sx={{ 
             display: 'flex', 
@@ -269,9 +194,7 @@ const QuizList = () => {
             color="textSecondary"
             sx={{ mb: 2 }}
           >
-            {activeTab === 0 
-              ? 'No public quizzes available yet' 
-              : 'You haven\'t created any private quizzes yet'}
+            No public quizzes available yet
           </Typography>
           <Button
             variant="contained"
@@ -287,12 +210,12 @@ const QuizList = () => {
               transition: 'all 0.3s ease-in-out'
             }}
           >
-            Create {activeTab === 0 ? 'First Public' : 'Private'} Quiz
+            Create First Public Quiz
           </Button>
         </Box>
       ) : (
         <Grid container spacing={3}>
-          {currentQuizzes.map((quiz) => (
+          {publicQuizzes.map((quiz) => (
             <Grid item xs={12} sm={6} md={4} key={quiz._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -305,12 +228,14 @@ const QuizList = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     background: '#ffffff',
-                    borderRadius: 3,
-                    border: '1px solid #e2e8f0',
-                    transition: 'all 0.3s ease-in-out',
+                    borderRadius: 4,
+                    border: '2.5px solid #1976d2',
+                    boxShadow: '0 8px 32px 0 #1976d2, 0 1.5px 8px 0 #90caf9',
+                    transition: 'all 0.3s cubic-bezier(.25,.8,.25,1)',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 12px 24px rgba(0, 0, 0, 0.1)',
+                      transform: 'translateY(-6px) scale(1.03)',
+                      boxShadow: '0 16px 40px rgba(25, 118, 210, 0.15)',
+                      borderColor: '#1565c0',
                     },
                   }}
                 >
@@ -327,9 +252,6 @@ const QuizList = () => {
                       >
                         {quiz.title}
                       </Typography>
-                      {!quiz.isPublic && (
-                        <LockIcon sx={{ color: '#1976d2' }} />
-                      )}
                     </Box>
                     <Typography 
                       color="text.secondary" 
@@ -373,7 +295,7 @@ const QuizList = () => {
                     <Button
                       variant="contained"
                       fullWidth
-                      onClick={() => handleTakeQuiz(quiz)}
+                      onClick={() => navigate(`/quiz/${quiz._id}`)}
                       sx={{
                         py: 1,
                         background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
@@ -386,8 +308,24 @@ const QuizList = () => {
                         transition: 'all 0.3s ease-in-out'
                       }}
                     >
-                      {!quiz.isPublic && quiz.password ? 'Enter Password' : 'Take Quiz'}
+                      Take Quiz
                     </Button>
+                    <IconButton
+                      aria-label="delete"
+                      color="error"
+                      onClick={() => handleOpenDeleteDialog(quiz._id)}
+                      sx={{
+                        ml: 1,
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                          boxShadow: '0 2px 8px rgba(239, 68, 68, 0.15)',
+                          color: '#b91c1c',
+                        },
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </CardActions>
                 </Card>
               </motion.div>
@@ -396,79 +334,22 @@ const QuizList = () => {
         </Grid>
       )}
 
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={6000}
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
       >
-        <Alert 
-          onClose={handleCloseNotification} 
-          severity={notification.type}
-          sx={{ width: '100%' }}
-        >
-          {notification.message}
-        </Alert>
-      </Snackbar>
-
-      <Dialog open={passwordDialog.open} onClose={() => setPasswordDialog({ ...passwordDialog, open: false })}>
-        <DialogTitle>Enter Quiz Password</DialogTitle>
+        <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Password"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={passwordDialog.password}
-            onChange={(e) => setPasswordDialog({ ...passwordDialog, password: e.target.value })}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handlePasswordSubmit();
-              }
-            }}
-          />
+          <Typography>Are you sure you want to delete this quiz? This action cannot be undone.</Typography>
         </DialogContent>
         <DialogActions>
-          <Button 
-            onClick={() => setPasswordDialog({ ...passwordDialog, open: false })}
-            color="primary"
-          >
+          <Button onClick={handleCloseDeleteDialog} color="primary" variant="outlined">
             Cancel
           </Button>
-          <Button 
-            onClick={handlePasswordSubmit} 
-            variant="contained" 
-            color="primary"
-          >
-            Submit
+          <Button onClick={handleConfirmDelete} color="error" variant="contained">
+            Delete
           </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={enrollDialog.open} onClose={() => setEnrollDialog({ ...enrollDialog, open: false })}>
-        <DialogTitle>Request Enrollment</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-            This quiz requires enrollment approval from the creator. Please provide a message with your request.
-          </Typography>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Message (Optional)"
-            type="text"
-            fullWidth
-            multiline
-            rows={4}
-            variant="outlined"
-            value={enrollDialog.message}
-            onChange={(e) => setEnrollDialog({ ...enrollDialog, message: e.target.value })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEnrollDialog({ ...enrollDialog, open: false })}>Cancel</Button>
-          <Button onClick={handleEnrollmentRequest} variant="contained" color="primary">Send Request</Button>
         </DialogActions>
       </Dialog>
     </Container>

@@ -124,349 +124,156 @@ const Profile = () => {
     }
   };
 
-  const achievements = [
-    {
-      id: 'quiz_master',
-      title: 'Quiz Master',
-      description: 'Complete 10 quizzes with a score above 80%',
-      icon: <TrophyIcon />,
-      progress: (stats.quizzesPassed / 10) * 100,
-      achieved: stats.quizzesPassed >= 10
-    },
-    {
-      id: 'perfect_score',
-      title: 'Perfect Scorer',
-      description: 'Get 100% on 5 different quizzes',
-      icon: <StarIcon />,
-      progress: (stats.perfectScores / 5) * 100,
-      achieved: stats.perfectScores >= 5
-    },
-    {
-      id: 'speed_demon',
-      title: 'Speed Demon',
-      description: 'Complete a quiz in less than 2 minutes',
-      icon: <SpeedIcon />,
-      progress: stats.fastestCompletion ? 100 : 0,
-      achieved: stats.fastestCompletion && stats.fastestCompletion < 120
-    },
-    {
-      id: 'streak_master',
-      title: 'Streak Master',
-      description: 'Maintain a 5-day quiz streak',
-      icon: <FireIcon />,
-      progress: (stats.streakCount / 5) * 100,
-      achieved: stats.streakCount >= 5
-    }
-  ];
-
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', bgcolor: 'linear-gradient(135deg, #e3f2fd 0%, #f8fafc 100%)' }}>
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Container 
-        maxWidth="lg" 
-        sx={{ 
-          py: 4,
-          ml: { sm: '240px' },
-          width: { sm: `calc(100% - 240px)` }
-        }}
-      >
-        <Grid container spacing={4}>
-          {/* Profile Overview */}
-          <Grid item xs={12} md={4}>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  textAlign: 'center',
-                  borderRadius: 3,
-                  background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
-                  color: 'white'
-                }}
-              >
-                <Avatar
-                  sx={{
-                    width: 120,
-                    height: 120,
-                    margin: '0 auto 16px',
-                    bgcolor: '#90caf9',
-                    border: '4px solid white'
-                  }}
-                >
-                  {user?.username?.charAt(0).toUpperCase()}
-                </Avatar>
-                <Typography variant="h5" gutterBottom>
-                  {user?.username}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {user?.email}
-                </Typography>
-                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<EditIcon />}
-                    onClick={() => setEditOpen(true)}
-                    sx={{ bgcolor: 'rgba(255, 255, 255, 0.2)' }}
-                  >
-                    Edit Profile
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={<LockResetIcon />}
-                    onClick={() => setResetOpen(true)}
-                    sx={{ bgcolor: 'rgba(255, 255, 255, 0.2)' }}
-                  >
-                    Reset Password
-                  </Button>
-                </Box>
-              </Paper>
-            </motion.div>
-          </Grid>
-
-          {/* Statistics */}
-          <Grid item xs={12} md={8}>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Quiz Statistics
-                </Typography>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <Card sx={{ bgcolor: 'rgba(25, 118, 210, 0.05)' }}>
-                      <CardContent>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Total Quizzes Taken
-                        </Typography>
-                        <Typography variant="h4" color="primary">
-                          {stats.totalQuizzesTaken}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Card sx={{ bgcolor: 'rgba(25, 118, 210, 0.05)' }}>
-                      <CardContent>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Correct Answers
-                        </Typography>
-                        <Typography variant="h4" color="primary">
-                          {stats.totalCorrectAnswers}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Card sx={{ bgcolor: 'rgba(25, 118, 210, 0.05)' }}>
-                      <CardContent>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Perfect Scores
-                        </Typography>
-                        <Typography variant="h4" color="primary">
-                          {stats.perfectScores}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Card sx={{ bgcolor: 'rgba(25, 118, 210, 0.05)' }}>
-                      <CardContent>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Current Streak
-                        </Typography>
-                        <Typography variant="h4" color="primary">
-                          {stats.streakCount} days
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </motion.div>
-          </Grid>
-
-          {/* Achievements */}
-          <Grid item xs={12}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Achievements
-                </Typography>
-                <Grid container spacing={3}>
-                  {achievements.map((achievement) => (
-                    <Grid item xs={12} sm={6} md={3} key={achievement.id}>
-                      <Card
-                        sx={{
-                          height: '100%',
-                          bgcolor: achievement.achieved ? 'rgba(76, 175, 80, 0.1)' : 'rgba(25, 118, 210, 0.05)',
-                          position: 'relative',
-                          overflow: 'visible'
-                        }}
-                      >
-                        <CardContent>
-                          {achievement.achieved && (
-                            <Badge
-                              sx={{
-                                position: 'absolute',
-                                top: -8,
-                                right: -8,
-                                '& .MuiBadge-badge': {
-                                  bgcolor: '#4caf50',
-                                  color: 'white'
-                                }
-                              }}
-                              badgeContent={<CheckCircleIcon fontSize="small" />}
-                            />
-                          )}
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              mb: 1,
-                              color: achievement.achieved ? '#4caf50' : '#1976d2'
-                            }}
-                          >
-                            {achievement.icon}
-                            <Typography variant="subtitle1" sx={{ ml: 1 }}>
-                              {achievement.title}
-                            </Typography>
-                          </Box>
-                          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                            {achievement.description}
-                          </Typography>
-                          <LinearProgress
-                            variant="determinate"
-                            value={achievement.progress}
-                            sx={{
-                              height: 8,
-                              borderRadius: 4,
-                              bgcolor: 'rgba(0, 0, 0, 0.1)',
-                              '& .MuiLinearProgress-bar': {
-                                bgcolor: achievement.achieved ? '#4caf50' : '#1976d2'
-                              }
-                            }}
-                          />
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            align="right"
-                            sx={{ mt: 0.5 }}
-                          >
-                            {Math.round(achievement.progress)}%
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Paper>
-            </motion.div>
-          </Grid>
-        </Grid>
-
-        {/* Dialogs */}
-        <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
-          <DialogTitle>Edit Profile</DialogTitle>
-          <DialogContent>
-            <TextField
-              margin="dense"
-              label="Name"
-              fullWidth
-              value={name}
-              onChange={e => setName(e.target.value)}
-            />
-            <TextField
-              margin="dense"
-              label="Email"
-              fullWidth
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-            <Button onClick={handleEditSave} variant="contained">Save</Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog open={resetOpen} onClose={() => setResetOpen(false)}>
-          <DialogTitle>Reset Password</DialogTitle>
-          <DialogContent>
-            <TextField
-              margin="dense"
-              label="Current Password"
-              type={showPassword ? 'text' : 'password'}
-              fullWidth
-              value={currentPassword}
-              onChange={e => setCurrentPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword((show) => !show)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              margin="dense"
-              label="New Password"
-              type={showPassword ? 'text' : 'password'}
-              fullWidth
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-            />
-            <TextField
-              margin="dense"
-              label="Confirm New Password"
-              type={showPassword ? 'text' : 'password'}
-              fullWidth
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setResetOpen(false)}>Cancel</Button>
-            <Button onClick={handleResetPassword} variant="contained">
-              Update Password
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={4000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    <Box sx={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #e3f2fd 0%, #f8fafc 100%)',
+      py: 8,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    }}>
+      <Card elevation={4} sx={{
+        maxWidth: 600,
+        width: '100%',
+        mx: 'auto',
+        p: 6,
+        borderRadius: 6,
+        background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(25, 118, 210, 0.15)',
+        mb: 8,
+        textAlign: 'center',
+      }}>
+        <Avatar
+          sx={{
+            width: 140,
+            height: 140,
+            mx: 'auto',
+            mb: 3,
+            fontSize: 64,
+            bgcolor: '#ffffff22',
+            border: '6px solid #fff',
+            color: '#1976d2',
+            boxShadow: '0 4px 16px rgba(25, 118, 210, 0.10)'
+          }}
         >
-          <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+          {user?.username?.charAt(0).toUpperCase()}
+        </Avatar>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, letterSpacing: 0.5 }}>{user?.username}</Typography>
+        <Typography variant="h6" sx={{ opacity: 0.9, mb: 3 }}>{user?.email}</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mb: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => setEditOpen(true)}
+            sx={{ bgcolor: '#fff', color: '#1976d2', fontWeight: 600, boxShadow: 'none', '&:hover': { bgcolor: '#e3f2fd' } }}
+          >
+            Edit Profile
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<LockResetIcon />}
+            onClick={() => setResetOpen(true)}
+            sx={{ borderColor: '#fff', color: '#fff', fontWeight: 600, '&:hover': { borderColor: '#e3f2fd', bgcolor: '#1565c0' } }}
+          >
+            Reset Password
+          </Button>
+        </Box>
+      </Card>
+
+      {/* Dialogs */}
+      <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
+        <DialogTitle>Edit Profile</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Name"
+            fullWidth
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Email"
+            fullWidth
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
+          <Button onClick={handleEditSave} variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={resetOpen} onClose={() => setResetOpen(false)}>
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Current Password"
+            type={showPassword ? 'text' : 'password'}
+            fullWidth
+            value={currentPassword}
+            onChange={e => setCurrentPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword((show) => !show)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            margin="dense"
+            label="New Password"
+            type={showPassword ? 'text' : 'password'}
+            fullWidth
+            value={newPassword}
+            onChange={e => setNewPassword(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Confirm New Password"
+            type={showPassword ? 'text' : 'password'}
+            fullWidth
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetOpen(false)}>Cancel</Button>
+            <Button onClick={handleResetPassword} variant="contained">
+            Update Password
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
