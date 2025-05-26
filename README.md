@@ -78,6 +78,3 @@ cd ../frontend
 npm start
 
 
----
-
-Would you like me to generate a downloadable `.md` file or help you commit this to your repo directly?
