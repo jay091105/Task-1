@@ -20,7 +20,13 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  IconButton
+  IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  InputAdornment,
+  Divider
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -31,16 +37,24 @@ import TimerIcon from '@mui/icons-material/Timer';
 import PublicIcon from '@mui/icons-material/Public';
 import LockIcon from '@mui/icons-material/Lock';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ShareIcon from '@mui/icons-material/Share';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
 const QuizList = () => {
   const [publicQuizzes, setPublicQuizzes] = useState([]);
+  const [filteredQuizzes, setFilteredQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ open: false, message: '', type: 'success' });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [quizToDelete, setQuizToDelete] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [timeFilter, setTimeFilter] = useState('all');
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -66,6 +80,7 @@ const QuizList = () => {
         }));
 
         setPublicQuizzes(processQuizzes(publicResponse.data.filter(quiz => quiz.isPublic)));
+        setFilteredQuizzes(processQuizzes(publicResponse.data.filter(quiz => quiz.isPublic)));
         
         // Show success notification if quiz was just created
         if (location.state?.quizCreated) {
@@ -92,6 +107,47 @@ const QuizList = () => {
     fetchQuizzes();
   }, [location]);
 
+  useEffect(() => {
+    filterQuizzes();
+  }, [searchTerm, timeFilter, publicQuizzes]);
+
+  const filterQuizzes = () => {
+    let filtered = [...publicQuizzes];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(quiz =>
+        quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quiz.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply time filter
+    if (timeFilter !== 'all') {
+      filtered = filtered.filter(quiz => {
+        if (timeFilter === 'short' && quiz.timeLimit <= 5) return true;
+        if (timeFilter === 'medium' && quiz.timeLimit > 5 && quiz.timeLimit <= 15) return true;
+        if (timeFilter === 'long' && quiz.timeLimit > 15) return true;
+        return false;
+      });
+    }
+
+    setFilteredQuizzes(filtered);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleTimeFilterChange = (event) => {
+    setTimeFilter(event.target.value);
+  };
+
+  const getTimeLabel = (minutes) => {
+    if (minutes === 0) return 'No time limit';
+    return `${minutes} min`;
+  };
+
   const handleCloseNotification = () => {
     setNotification({ ...notification, open: false });
   };
@@ -114,6 +170,7 @@ const QuizList = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setPublicQuizzes((prev) => prev.filter((q) => q._id !== quizToDelete));
+      setFilteredQuizzes((prev) => prev.filter((q) => q._id !== quizToDelete));
       toast.success('Quiz deleted successfully!');
     } catch (err) {
       if (err.response && err.response.status === 404) {
@@ -123,6 +180,26 @@ const QuizList = () => {
       }
     } finally {
       handleCloseDeleteDialog();
+    }
+  };
+
+  const handleShare = async (quizId) => {
+    try {
+      const shareUrl = `${window.location.origin}/take-quiz/${quizId}`;
+      
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Take this quiz!',
+          text: 'Check out this quiz I found!',
+          url: shareUrl
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Quiz link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing quiz:', error);
+      toast.error('Failed to share quiz');
     }
   };
 
@@ -177,7 +254,48 @@ const QuizList = () => {
         </Button>
       </Box>
 
-      {publicQuizzes.length === 0 ? (
+      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Search quizzes..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Time Filter</InputLabel>
+              <Select
+                value={timeFilter}
+                onChange={handleTimeFilterChange}
+                label="Time Filter"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <FilterListIcon />
+                  </InputAdornment>
+                }
+              >
+                <MenuItem value="all">All Durations</MenuItem>
+                <MenuItem value="short">Short (≤ 5 min)</MenuItem>
+                <MenuItem value="medium">Medium (6-15 min)</MenuItem>
+                <MenuItem value="long">Long (&gt; 15 min)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {filteredQuizzes.length === 0 ? (
         <Box 
           sx={{ 
             display: 'flex', 
@@ -215,7 +333,7 @@ const QuizList = () => {
         </Box>
       ) : (
         <Grid container spacing={3}>
-          {publicQuizzes.map((quiz) => (
+          {filteredQuizzes.map((quiz) => (
             <Grid item xs={12} sm={6} md={4} key={quiz._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -240,7 +358,7 @@ const QuizList = () => {
                   }}
                 >
                   <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Typography 
                         variant="h6" 
                         component="h2" 
@@ -252,6 +370,19 @@ const QuizList = () => {
                       >
                         {quiz.title}
                       </Typography>
+                      <IconButton 
+                        onClick={() => handleShare(quiz._id)}
+                        size="small"
+                        sx={{ 
+                          color: 'primary.main',
+                          '&:hover': {
+                            backgroundColor: 'primary.light',
+                            color: 'white'
+                          }
+                        }}
+                      >
+                        <ShareIcon />
+                      </IconButton>
                     </Box>
                     <Typography 
                       color="text.secondary" 

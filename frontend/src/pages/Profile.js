@@ -22,7 +22,11 @@ import {
   Chip,
   Badge,
   CircularProgress,
-  LinearProgress
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Divider
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -61,9 +65,17 @@ const Profile = () => {
     fastestCompletion: null,
     streakCount: 0
   });
+  const [quizStats, setQuizStats] = useState({
+    totalQuizzes: 0,
+    averageScore: 0,
+    highestScore: 0,
+    totalTimeSpent: 0,
+    recentPerformance: []
+  });
 
   useEffect(() => {
     fetchUserStats();
+    fetchQuizStats();
   }, []);
 
   const fetchUserStats = async () => {
@@ -77,6 +89,17 @@ const Profile = () => {
       setLoading(false);
     } catch (err) {
       console.error('Error fetching user stats:', err);
+      setLoading(false);
+    }
+  };
+
+  const fetchQuizStats = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/results/user-stats');
+      setQuizStats(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching quiz stats:', error);
       setLoading(false);
     }
   };
@@ -274,6 +297,103 @@ const Profile = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Quiz Analytics Section */}
+      <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
+        <Typography variant="h5" gutterBottom sx={{ color: '#1976d2', fontWeight: 600 }}>
+          Quiz Analytics
+        </Typography>
+        
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid container spacing={3}>
+            {/* Stats Cards */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' }}>
+                <CardContent>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Total Quizzes
+                  </Typography>
+                  <Typography variant="h4" color="primary">
+                    {quizStats.totalQuizzes}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)' }}>
+                <CardContent>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Average Score
+                  </Typography>
+                  <Typography variant="h4" color="primary">
+                    {quizStats.averageScore}%
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)' }}>
+                <CardContent>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Highest Score
+                  </Typography>
+                  <Typography variant="h4" color="primary">
+                    {quizStats.highestScore}%
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)' }}>
+                <CardContent>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Time Spent
+                  </Typography>
+                  <Typography variant="h4" color="primary">
+                    {Math.round(quizStats.totalTimeSpent / 60)}h
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Recent Performance */}
+            <Grid item xs={12}>
+              <Card sx={{ mt: 2 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Recent Performance
+                  </Typography>
+                  <List>
+                    {quizStats.recentPerformance.map((quiz, index) => (
+                      <React.Fragment key={index}>
+                        <ListItem>
+                          <ListItemText
+                            primary={quiz.title}
+                            secondary={`Score: ${quiz.score}% | Time: ${Math.round(quiz.timeTaken / 60)}m`}
+                          />
+                          <Chip
+                            label={`${quiz.score}%`}
+                            color={quiz.score >= 80 ? 'success' : quiz.score >= 60 ? 'warning' : 'error'}
+                            variant="outlined"
+                          />
+                        </ListItem>
+                        {index < quizStats.recentPerformance.length - 1 && <Divider />}
+                      </React.Fragment>
+                    ))}
+                  </List>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+      </Paper>
     </Box>
   );
 };

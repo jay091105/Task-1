@@ -61,4 +61,39 @@ router.get('/:id', auth, async (req, res) => {
     }
 });
 
+// Get user's quiz statistics
+router.get('/user-stats', auth, async (req, res) => {
+    try {
+        // Get all results for the user
+        const results = await QuizResult.find({ user: req.user._id })
+            .populate('quiz', 'title')
+            .sort({ createdAt: -1 });
+
+        // Calculate statistics
+        const totalQuizzes = results.length;
+        const totalScore = results.reduce((sum, result) => sum + (result.score / result.totalQuestions * 100), 0);
+        const averageScore = totalQuizzes > 0 ? Math.round(totalScore / totalQuizzes) : 0;
+        const highestScore = totalQuizzes > 0 ? Math.round(Math.max(...results.map(r => (r.score / r.totalQuestions * 100)))) : 0;
+        const totalTimeSpent = results.reduce((sum, result) => sum + (result.timeTaken || 0), 0);
+
+        // Get recent performance (last 5 quizzes)
+        const recentPerformance = results.slice(0, 5).map(result => ({
+            title: result.quiz.title,
+            score: Math.round((result.score / result.totalQuestions) * 100),
+            timeTaken: result.timeTaken
+        }));
+
+        res.json({
+            totalQuizzes,
+            averageScore,
+            highestScore,
+            totalTimeSpent,
+            recentPerformance
+        });
+    } catch (error) {
+        console.error('Error fetching user stats:', error);
+        res.status(500).json({ message: 'Error fetching user statistics' });
+    }
+});
+
 module.exports = router; 
