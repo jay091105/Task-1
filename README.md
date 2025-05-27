@@ -77,7 +77,6 @@ npm run dev
 cd ../frontend
 npm start
 
+📄 License
+This project is licensed under the MIT License.
 
----
-
-Would you like me to generate a downloadable `.md` file or help you commit this to your repo directly?
