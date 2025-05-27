@@ -31,7 +31,7 @@ A full-stack web application that allows users to create, manage, and take quizz
   ![Landing Page](./assets/LandingPage.png)
 
 - **Home Page**  
- ![Home Page](./assets/Home.png)
+ ![Home Page](assets/Home.png)
 
 - **Quiz Page**  
   ![Quiz Page](./assets/Quiz.png)
