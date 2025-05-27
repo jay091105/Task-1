@@ -21,23 +21,27 @@ A full-stack web application that allows users to create, manage, and take quizz
 
 ## Frontend Preview
 
-- **Sign In Page**  
-  ![Sign In Page](./assets/SignIn.png)
+- **Sign In Page :-**  
+  ![Sign In Page](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/SignIn.png)
 
-- **Sign Up Page**  
-  ![Sign In Page](./assets/SignUp.png)
+- **Sign Up Page :-**  
+  ![Sign Up Page](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/SignUp.png)
 
-- **Home Page**  
- ![Sign In Page](./assets/Home.png)
+- **Landing Page :-**  
+  ![Landing Page](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/LandingPage.png)
 
-- **Quiz Page**  
-  ![Sign In Page](./assets/Quiz.png)
+- **Home Page :-**  
+  ![Home Page](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/Home.png)
 
-- **Quizzes List**  
-  ![Quizzes List](./assets/Quiz_List.png)
+- **Quiz Page :-**  
+  ![Quiz Page](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/Quiz1.png)
+  ![Quiz Page](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/Quiz2.png)
 
-- **Profile Page**
-  ![Quizzes List](./assets/Profile.png)
+- **Quizzes List :-**  
+  ![Quizzes List](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/Quiz_List.png)
+
+- **Profile Page :-**  
+  ![Profile Page](https://raw.githubusercontent.com/jay091105/codsoft_task-2/main/assets/Profile.png)
 
 ### Backend
 - Node.js
